@@ -13,8 +13,6 @@ class Plan:
     operations = fields.One2Many('product.cost.plan.operation_line', 'plan',
         'Operation Lines')
 
-    def get_cost(
-
     @classmethod
     def get_margins(cls, plans, names):
         res = {}
