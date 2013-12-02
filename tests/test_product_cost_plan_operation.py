@@ -24,12 +24,12 @@ class TestCase(unittest.TestCase):
     def setUp(self):
         trytond.tests.test_tryton.install_module('product_cost_plan_operation')
 
-    def test0005views(self):
-        '''
-        Test views.
-        '''
-        test_view('product_cost_plan_operation')
-
+#    def test0005views(self):
+#        '''
+#        Test views.
+#        '''
+#        test_view('product_cost_plan_operation')
+#
     def test0006depends(self):
         '''
         Test depends.
