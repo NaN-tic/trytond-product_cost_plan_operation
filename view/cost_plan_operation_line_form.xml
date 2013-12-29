@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!-- The COPYRIGHT file at the top level of this repository contains the full
+     copyright notices and license terms. -->
+<form string="Product Cost Plan BOM">
+    <label name="plan"/>
+    <field name="plan"/>
+    <newline/>
+    <label name="route_operation"/>
+    <field name="route_operation"/>
+    <label name="work_center"/>
+    <field name="work_center"/>
+    <label name="quantity"/>
+    <field name="quantity"/>
+    <label name="uom"/>
+    <field name="uom"/>
+</form>

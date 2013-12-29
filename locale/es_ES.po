@@ -1,0 +1,91 @@
+# 
+msgid ""
+msgstr "Content-Type: text/plain; charset=utf-8\n"
+
+msgctxt "field:product.cost.plan,operation_cost:"
+msgid "Operation Cost"
+msgstr "Coste operación"
+
+msgctxt "field:product.cost.plan,operations:"
+msgid "Operation Lines"
+msgstr "Lineas operaciones"
+
+msgctxt "field:product.cost.plan,route:"
+msgid "Route"
+msgstr "Ruta"
+
+msgctxt "field:product.cost.plan.operation_line,cost:"
+msgid "Cost"
+msgstr "Coste"
+
+msgctxt "field:product.cost.plan.operation_line,create_date:"
+msgid "Create Date"
+msgstr "Fecha de creación"
+
+msgctxt "field:product.cost.plan.operation_line,create_uid:"
+msgid "Create User"
+msgstr "Usuario de creación"
+
+msgctxt "field:product.cost.plan.operation_line,id:"
+msgid "ID"
+msgstr "Identificador"
+
+msgctxt "field:product.cost.plan.operation_line,plan:"
+msgid "Plan"
+msgstr "Plan"
+
+msgctxt "field:product.cost.plan.operation_line,quantity:"
+msgid "Quantity"
+msgstr "Cantidad"
+
+msgctxt "field:product.cost.plan.operation_line,rec_name:"
+msgid "Name"
+msgstr "Nom del camp"
+
+msgctxt "field:product.cost.plan.operation_line,route_operation:"
+msgid "Route Operation"
+msgstr "Ruta de operación"
+
+msgctxt "field:product.cost.plan.operation_line,unit_digits:"
+msgid "Unit Digits"
+msgstr "Dígitos unidad"
+
+msgctxt "field:product.cost.plan.operation_line,uom:"
+msgid "Uom"
+msgstr "UdM"
+
+msgctxt "field:product.cost.plan.operation_line,uom_category:"
+msgid "Uom Category"
+msgstr "Categoría de UdM"
+
+msgctxt "field:product.cost.plan.operation_line,work_center:"
+msgid "Work Center"
+msgstr "Centro de trabajo"
+
+msgctxt "field:product.cost.plan.operation_line,write_date:"
+msgid "Write Date"
+msgstr "Fecha modificación"
+
+msgctxt "field:product.cost.plan.operation_line,write_uid:"
+msgid "Write User"
+msgstr "Usuario modificación"
+
+msgctxt "model:ir.action,name:act_product_cost_plan_operation_line"
+msgid "Product Cost Plan Operation"
+msgstr "Operación de Plan de coste del producto"
+
+msgctxt "model:product.cost.plan.operation_line,name:"
+msgid "Product Cost Plan Operation Line"
+msgstr "Operación de Plan de coste del producto"
+
+msgctxt "view:product.cost.plan.operation_line:"
+msgid "Product Cost Plan BOM"
+msgstr "LdM Plan de coste del producto"
+
+msgctxt "view:product.cost.plan.operation_line:"
+msgid "Product Cost Plan Operation"
+msgstr "Operación de Plan de coste del producto"
+
+msgctxt "view:product.cost.plan:"
+msgid "Operations"
+msgstr "Operaciones"
