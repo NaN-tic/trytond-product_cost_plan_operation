@@ -5,6 +5,7 @@
     <field name="plan"/>
     <field name="route_operation"/>
     <field name="work_center"/>
+    <field name="work_center_category"/>
     <field name="quantity"/>
     <field name="uom"/>
     <field name="cost"/>

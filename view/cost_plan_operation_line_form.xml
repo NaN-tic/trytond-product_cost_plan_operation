@@ -9,6 +9,8 @@
     <field name="route_operation"/>
     <label name="work_center"/>
     <field name="work_center"/>
+    <label name="work_center_category"/>
+    <field name="work_center_category"/>
     <label name="quantity"/>
     <field name="quantity"/>
     <label name="uom"/>
