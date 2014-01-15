@@ -75,16 +75,24 @@ Create a route with two operations on diferent work center::
     >>> assembly.save()
     >>> clean = OperationType(name='clean')
     >>> clean.save()
-    >>> WorkCenter = Model.get('production.work_center')
     >>> hour, = ProductUom.find([('name', '=', 'Hour')])
+    >>> WorkCenter = Model.get('production.work_center')
+    >>> WorkCenterCategory = Model.get('production.work_center.category')
+    >>> category = WorkCenterCategory()
+    >>> category.name = 'Default Category'
+    >>> category.uom = hour
+    >>> category.cost_price = Decimal('25.0')
+    >>> category.save()
     >>> workcenter1 = WorkCenter()
     >>> workcenter1.name = 'Assembler Machine'
     >>> workcenter1.type = 'machine'
+    >>> workcenter1.category = category
     >>> workcenter1.uom = hour
     >>> workcenter1.cost_price = Decimal('25.0')
     >>> workcenter1.save()
     >>> workcenter2 = WorkCenter()
     >>> workcenter2.name = 'Cleaner Machine'
+    >>> workcenter2.category = category
     >>> workcenter2.type = 'machine'
     >>> workcenter2.uom = hour
     >>> workcenter2.cost_price = Decimal('50.0')
@@ -94,12 +102,16 @@ Create a route with two operations on diferent work center::
     >>> route.operations.append(route_operation)
     >>> route_operation.sequence = 1
     >>> route_operation.operation_type = assembly
+    >>> route_operation.work_center_category = category
     >>> route_operation.work_center = workcenter1
+    >>> route_operation.quantity = 1
     >>> route_operation = RouteOperation()
     >>> route.operations.append(route_operation)
     >>> route_operation.sequence = 2
     >>> route_operation.operation_type = clean
+    >>> route_operation.work_center_category = category
     >>> route_operation.work_center = workcenter2
+    >>> route_operation.quantity = 1
     >>> route.save()
     >>> route.reload()
     >>> len(route.operations) == 2
