@@ -16,7 +16,7 @@ class PlanOperationLine(ModelSQL, ModelView):
     work_center_category = fields.Many2One('production.work_center.category',
         'Work Center Category')
     route_operation = fields.Many2One('production.route.operation',
-        'Route Operation')
+        'Route Operation', on_change=['route_operation'])
     uom_category = fields.Function(fields.Many2One(
             'product.uom.category', 'Uom Category', on_change_with=[
                 'work_center', 'work_center_category']),
@@ -32,6 +32,21 @@ class PlanOperationLine(ModelSQL, ModelView):
     cost = fields.Function(fields.Numeric('Cost', on_change_with=['quantity',
                 'cost_price', 'uom', 'work_center', 'work_center_category']),
                 'on_change_with_cost')
+
+    def on_change_route_operation(self):
+        res = {}
+        route = self.route_operation
+        if not route:
+            return res
+        if route.work_center:
+            res['work_center'] = route.work_center.id
+        if route.work_center_category:
+            res['work_center_category'] = route.work_center_category.id
+        if route.uom:
+            res['uom'] = route.uom.id
+        if route.quantity:
+            res['quantity'] = route.quantity
+        return res
 
     def on_change_with_uom_category(self, name=None):
         if self.work_center:
@@ -54,6 +69,8 @@ class PlanOperationLine(ModelSQL, ModelView):
         pool = Pool()
         Uom = pool.get('product.uom')
         wc = self.work_center or self.work_center_category
+        if not wc:
+            return Decimal('0.0')
         quantity = Uom.compute_qty(self.uom, self.quantity,
             wc.uom)
         return Decimal(str(quantity)) * wc.cost_price
@@ -67,9 +84,7 @@ class Plan:
             'readonly': Eval('state') != 'draft',
             }, depends=['state'])
     operations = fields.One2Many('product.cost.plan.operation_line', 'plan',
-        'Operation Lines', states={
-            'readonly': Eval('state') != 'draft',
-            }, depends=['state'])
+        'Operation Lines')
     operation_cost = fields.Function(fields.Numeric('Operation Cost',
             on_change_with=['operations']), 'on_change_with_operation_cost')
 
