@@ -92,7 +92,6 @@ class Plan:
                 work_center_category = operation.work_center_category
 
             wc = work_center or work_center_category
-
             operations['add'].append({
                     'work_center': work_center and work_center.id or None,
                     'work_center_category': work_center_category and
