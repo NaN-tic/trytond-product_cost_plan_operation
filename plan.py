@@ -113,7 +113,7 @@ class Plan:
                         work_center_category.id or None,
                     'route_operation': operation.id,
                     'uom': wc.uom.id,
-                    'quantity': 0.0,
+                    'quantity': operation.quantity,
                     })
         return changes
 

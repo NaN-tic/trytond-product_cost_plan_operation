@@ -104,7 +104,7 @@ Create a route with two operations on diferent work center::
     >>> route_operation.operation_type = assembly
     >>> route_operation.work_center_category = category
     >>> route_operation.work_center = workcenter1
-    >>> route_operation.quantity = 1
+    >>> route_operation.quantity = 5
     >>> route_operation = RouteOperation()
     >>> route.operations.append(route_operation)
     >>> route_operation.sequence = 2
@@ -219,16 +219,13 @@ Create a cost plan for product::
     >>> plan.save()
     >>> plan.state
     u'draft'
-    >>> for operation in plan.operations:
-    ...     operation.quantity = 1.0
-    ...     operation.save()
     >>> CostPlan.compute([plan.id], config.context)
     >>> plan.reload()
     >>> plan.state
     u'computed'
     >>> len(plan.products) == 2
     True
-    >>> plan.operation_cost == Decimal('75.0')
+    >>> plan.operation_cost == Decimal('175.0')
     True
     >>> plan.total_cost == plan.product_cost + plan.operation_cost
     True
