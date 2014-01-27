@@ -80,13 +80,24 @@ class Plan:
     __name__ = 'product.cost.plan'
 
     route = fields.Many2One('production.route', 'Route',
-        on_change=['route', 'operations'], states={
+        on_change=['route', 'operations', 'bom', 'product', 'quantity'],
+        states={
             'readonly': Eval('state') != 'draft',
-            }, depends=['state'])
+            },
+        depends=['state'])
     operations = fields.One2Many('product.cost.plan.operation_line', 'plan',
         'Operation Lines')
     operation_cost = fields.Function(fields.Numeric('Operation Cost',
             on_change_with=['operations']), 'on_change_with_operation_cost')
+
+    @classmethod
+    def __setup__(cls):
+        super(Plan, cls).__setup__()
+        if not cls.quantity.on_change:
+            cls.quantity.on_change = []
+        for name in cls.route.on_change:
+            if not name in cls.quantity.on_change:
+                cls.quantity.on_change.append(name)
 
     def update_operations(self):
         if not self.route:
@@ -98,6 +109,10 @@ class Plan:
         changes = {
             'operations': operations,
             }
+        factor = 1.0
+        if self.bom and self.bom.route and self.bom.route == self.route:
+            factor = self.bom.compute_factor(self.product, self.quantity or 0,
+                self.product.default_uom)
         for operation in self.route.operations:
             work_center = None
             work_center_category = None
@@ -113,11 +128,14 @@ class Plan:
                         work_center_category.id or None,
                     'route_operation': operation.id,
                     'uom': wc.uom.id,
-                    'quantity': operation.quantity,
+                    'quantity': operation.quantity * factor,
                     })
         return changes
 
     def on_change_route(self):
+        return self.update_operations()
+
+    def on_change_quantity(self):
         return self.update_operations()
 
     def on_change_with_total_cost(self, name=None):

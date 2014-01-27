@@ -165,7 +165,7 @@ Create Bill of Material::
     >>> BOM = Model.get('production.bom')
     >>> BOMInput = Model.get('production.bom.input')
     >>> BOMOutput = Model.get('production.bom.output')
-    >>> bom = BOM(name='product')
+    >>> bom = BOM(name='product', route=route)
     >>> input1 = BOMInput()
     >>> bom.inputs.append(input1)
     >>> input1.product = component1
@@ -215,7 +215,7 @@ Create a cost plan for product::
     >>> plan.route = route
     >>> len(plan.operations) == 2
     True
-    >>> plan.quantity = 10
+    >>> plan.quantity = 1
     >>> plan.save()
     >>> plan.state
     u'draft'
@@ -226,6 +226,29 @@ Create a cost plan for product::
     >>> len(plan.products) == 2
     True
     >>> plan.operation_cost == Decimal('175.0')
+    True
+    >>> plan.total_cost == plan.product_cost + plan.operation_cost
+    True
+
+Create a cost plan for 10 units::
+
+    >>> CostPlan = Model.get('product.cost.plan')
+    >>> plan = CostPlan()
+    >>> plan.product = product
+    >>> plan.route = route
+    >>> len(plan.operations) == 2
+    True
+    >>> plan.quantity = 10
+    >>> plan.save()
+    >>> plan.state
+    u'draft'
+    >>> CostPlan.compute([plan.id], config.context)
+    >>> plan.reload()
+    >>> plan.state
+    u'computed'
+    >>> len(plan.products) == 2
+    True
+    >>> plan.operation_cost == Decimal('1750')
     True
     >>> plan.total_cost == plan.product_cost + plan.operation_cost
     True
