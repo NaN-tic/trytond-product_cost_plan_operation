@@ -66,5 +66,8 @@
             <field name="perm_create" eval="True"/>
             <field name="perm_delete" eval="True"/>
         </record>
+        <record model="product.cost.plan.cost.type" id="operations">
+            <field name="name">Operations</field>
+        </record>
     </data>
 </tryton>

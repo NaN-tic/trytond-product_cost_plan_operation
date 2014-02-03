@@ -40,7 +40,7 @@ msgstr "Cantidad"
 
 msgctxt "field:product.cost.plan.operation_line,rec_name:"
 msgid "Name"
-msgstr "Nom del camp"
+msgstr "Nombre"
 
 msgctxt "field:product.cost.plan.operation_line,route_operation:"
 msgid "Route Operation"
@@ -77,6 +77,10 @@ msgstr "Usuario modificación"
 msgctxt "model:ir.action,name:act_product_cost_plan_operation_line"
 msgid "Product Cost Plan Operation"
 msgstr "Operación de Plan de coste del producto"
+
+msgctxt "model:product.cost.plan.cost.type,name:operations"
+msgid "Operations"
+msgstr "Operaciones"
 
 msgctxt "model:product.cost.plan.operation_line,name:"
 msgid "Product Cost Plan Operation Line"

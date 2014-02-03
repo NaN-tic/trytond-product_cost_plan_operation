@@ -86,7 +86,7 @@ class Plan:
             },
         depends=['state'])
     operations = fields.One2Many('product.cost.plan.operation_line', 'plan',
-        'Operation Lines')
+        'Operation Lines', on_change=['costs', 'operations'])
     operation_cost = fields.Function(fields.Numeric('Operation Cost',
             on_change_with=['operations']), 'on_change_with_operation_cost')
 
@@ -138,12 +138,33 @@ class Plan:
     def on_change_quantity(self):
         return self.update_operations()
 
-    def on_change_with_total_cost(self, name=None):
-        cost = super(Plan, self).on_change_with_total_cost(name)
-        return cost + self.operation_cost
-
     def on_change_with_operation_cost(self, name=None):
         cost = Decimal('0.0')
         for operation in self.operations:
             cost += operation.cost or Decimal('0.0')
         return cost
+
+    def on_change_operations(self):
+        pool = Pool()
+        CostType = pool.get('product.cost.plan.cost.type')
+        ModelData = pool.get('ir.model.data')
+
+        type_ = CostType(ModelData.get_id('product_cost_plan_operation',
+                'operations'))
+        self.operation_cost = sum(o.cost for o in self.operations)
+        return self.update_cost_type(type_, self.operation_cost)
+
+    @classmethod
+    def get_cost_types(cls):
+        """
+        Returns a list of values with the cost types and the field to get
+        their cost.
+        """
+        pool = Pool()
+        CostType = pool.get('product.cost.plan.cost.type')
+        ModelData = pool.get('ir.model.data')
+        ret = super(Plan, cls).get_cost_types()
+        type_ = CostType(ModelData.get_id('product_cost_plan_operation',
+            'operations'))
+        ret.append((type_, 'operation_cost'))
+        return ret

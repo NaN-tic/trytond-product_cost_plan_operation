@@ -225,6 +225,11 @@ Create a cost plan for product::
     u'computed'
     >>> len(plan.products) == 2
     True
+    >>> product_cost, operation_cost = plan.costs
+    >>> product_cost.cost == plan.product_cost
+    True
+    >>> operation_cost.cost == plan.operation_cost
+    True
     >>> plan.operation_cost == Decimal('175.0')
     True
     >>> plan.total_cost == plan.product_cost + plan.operation_cost
