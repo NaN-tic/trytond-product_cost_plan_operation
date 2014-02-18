@@ -151,7 +151,7 @@ class Plan:
 
         type_ = CostType(ModelData.get_id('product_cost_plan_operation',
                 'operations'))
-        self.operation_cost = sum(o.cost for o in self.operations)
+        self.operation_cost = sum(o.cost for o in self.operations if o.cost)
         return self.update_cost_type(type_, self.operation_cost)
 
     @classmethod
