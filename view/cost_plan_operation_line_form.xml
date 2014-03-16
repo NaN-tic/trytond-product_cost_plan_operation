@@ -11,8 +11,8 @@
     <field name="work_center"/>
     <label name="work_center_category"/>
     <field name="work_center_category"/>
-    <label name="quantity"/>
-    <field name="quantity"/>
-    <label name="uom"/>
-    <field name="uom"/>
+    <label name="time"/>
+    <field name="time"/>
+    <label name="time_uom"/>
+    <field name="time_uom"/>
 </form>

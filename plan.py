@@ -1,7 +1,7 @@
 from decimal import Decimal
 from trytond.model import ModelSQL, ModelView, fields
 from trytond.pool import Pool, PoolMeta
-from trytond.pyson import Eval
+from trytond.pyson import Eval, Id
 
 __all__ = ['PlanOperationLine', 'Plan']
 __metaclass__ = PoolMeta
@@ -17,21 +17,16 @@ class PlanOperationLine(ModelSQL, ModelView):
         'Work Center Category')
     route_operation = fields.Many2One('production.route.operation',
         'Route Operation', on_change=['route_operation'])
-    uom_category = fields.Function(fields.Many2One(
-            'product.uom.category', 'Uom Category', on_change_with=[
-                'work_center', 'work_center_category']),
-        'on_change_with_uom_category')
-    uom = fields.Many2One('product.uom', 'Uom', required=True, domain=[
-            ('category', '=', Eval('uom_category')),
-            ], depends=['uom_category'], on_change_with=['work_center',
-            'work_center_category'])
-    unit_digits = fields.Function(fields.Integer('Unit Digits',
-            on_change_with=['uom']), 'on_change_with_unit_digits')
-    quantity = fields.Float('Quantity', required=True,
+    time = fields.Float('Quantity', required=True,
         digits=(16, Eval('unit_digits', 2)), depends=['unit_digits'])
-    cost = fields.Function(fields.Numeric('Cost', on_change_with=['quantity',
-                'cost_price', 'uom', 'work_center', 'work_center_category']),
-                'on_change_with_cost')
+    time_uom = fields.Many2One('product.uom', 'Uom', required=True, domain=[
+            ('category', '=', Id('product', 'uom_cat_time')),
+            ], on_change_with=['work_center', 'work_center_category'])
+    time_uom_digits = fields.Function(fields.Integer('Time UOM Digits',
+            on_change_with=['uom']), 'on_change_with_time_uom_digits')
+    cost = fields.Function(fields.Numeric('Cost', on_change_with=['time',
+                'cost_price', 'time_uom', 'work_center',
+                'work_center_category']), 'on_change_with_cost')
 
     def on_change_route_operation(self):
         res = {}
@@ -42,27 +37,21 @@ class PlanOperationLine(ModelSQL, ModelView):
             res['work_center'] = route.work_center.id
         if route.work_center_category:
             res['work_center_category'] = route.work_center_category.id
-        if route.uom:
-            res['uom'] = route.uom.id
-        if route.quantity:
-            res['quantity'] = route.quantity
+        if route.time_uom:
+            res['time_uom'] = route.time_uom.id
+        if route.time:
+            res['time'] = route.time
         return res
 
-    def on_change_with_uom_category(self, name=None):
-        if self.work_center:
-            return self.work_center.uom.category.id
-        elif self.work_center_category:
-            return self.work_center_category.uom.category.id
-
-    def on_change_with_uom(self):
+    def on_change_with_time_uom(self):
         if self.work_center:
             return self.work_center.uom.id
         if self.work_center_category:
             return self.work_center_category.uom.id
 
-    def on_change_with_unit_digits(self, name=None):
-        if self.uom:
-            return self.uom.digits
+    def on_change_with_uom_digits(self, name=None):
+        if self.time_uom:
+            return self.time_uom.digits
         return 2
 
     def on_change_with_cost(self, name=None):
@@ -71,16 +60,16 @@ class PlanOperationLine(ModelSQL, ModelView):
         wc = self.work_center or self.work_center_category
         if not wc:
             return Decimal('0.0')
-        quantity = Uom.compute_qty(self.uom, self.quantity,
+        time = Uom.compute_qty(self.time_uom, self.time,
             wc.uom)
-        return Decimal(str(quantity)) * wc.cost_price
+        return Decimal(str(time)) * wc.cost_price
 
 
 class Plan:
     __name__ = 'product.cost.plan'
 
     route = fields.Many2One('production.route', 'Route',
-        on_change=['route', 'operations', 'bom', 'product', 'quantity'],
+        on_change=['route', 'operations', 'bom', 'product'],
         states={
             'readonly': Eval('state') != 'draft',
             },
@@ -89,15 +78,6 @@ class Plan:
         'Operation Lines', on_change=['costs', 'operations'])
     operation_cost = fields.Function(fields.Numeric('Operation Cost',
             on_change_with=['operations']), 'on_change_with_operation_cost')
-
-    @classmethod
-    def __setup__(cls):
-        super(Plan, cls).__setup__()
-        if not cls.quantity.on_change:
-            cls.quantity.on_change = []
-        for name in cls.route.on_change:
-            if not name in cls.quantity.on_change:
-                cls.quantity.on_change.append(name)
 
     def update_operations(self):
         if not self.route:
@@ -110,9 +90,9 @@ class Plan:
             'operations': operations,
             }
         factor = 1.0
-        if self.bom and self.bom.route and self.bom.route == self.route:
-            factor = self.bom.compute_factor(self.product, self.quantity or 0,
-                self.product.default_uom)
+        #if self.bom and self.bom.route and self.bom.route == self.route:
+            #factor = self.bom.compute_factor(self.product, 1,
+                #self.product.default_uom)
         for operation in self.route.operations:
             work_center = None
             work_center_category = None
@@ -127,15 +107,12 @@ class Plan:
                     'work_center_category': work_center_category and
                         work_center_category.id or None,
                     'route_operation': operation.id,
-                    'uom': wc.uom.id,
-                    'quantity': operation.quantity * factor,
+                    'time_uom': operation.time_uom.id,
+                    'time': operation.time * factor,
                     })
         return changes
 
     def on_change_route(self):
-        return self.update_operations()
-
-    def on_change_quantity(self):
         return self.update_operations()
 
     def on_change_with_operation_cost(self, name=None):
