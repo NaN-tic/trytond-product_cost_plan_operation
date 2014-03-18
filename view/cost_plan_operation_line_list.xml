@@ -2,7 +2,6 @@
 <!-- The COPYRIGHT file at the top level of this repository contains the full
      copyright notices and license terms. -->
 <tree string="Product Cost Plan Operation" editable="bottom" sequence="sequence">
-    <field name="sequence" tree_invisible="1"/>
     <field name="plan"/>
     <field name="operation_type"/>
     <field name="work_center"/>
