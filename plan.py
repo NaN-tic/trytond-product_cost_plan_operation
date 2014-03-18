@@ -1,10 +1,12 @@
 from decimal import Decimal
 from trytond.model import ModelSQL, ModelView, fields
 from trytond.pool import Pool, PoolMeta
-from trytond.pyson import Eval, Id
+from trytond.pyson import Eval, Id, If, Bool
 
 __all__ = ['PlanOperationLine', 'Plan']
 __metaclass__ = PoolMeta
+
+_ZERO = Decimal('0.0')
 
 
 class PlanOperationLine(ModelSQL, ModelView):
@@ -12,36 +14,64 @@ class PlanOperationLine(ModelSQL, ModelView):
     __name__ = 'product.cost.plan.operation_line'
 
     plan = fields.Many2One('product.cost.plan', 'Plan', required=True)
+    sequence = fields.Integer('Sequence')
     work_center = fields.Many2One('production.work_center', 'Work Center')
     work_center_category = fields.Many2One('production.work_center.category',
         'Work Center Category')
-    route_operation = fields.Many2One('production.route.operation',
-        'Route Operation', on_change=['route_operation'])
+    operation_type = fields.Many2One('production.operation.type',
+        'Operation Type')
     time = fields.Float('Quantity', required=True,
-        digits=(16, Eval('unit_digits', 2)), depends=['unit_digits'])
+        digits=(16, Eval('time_uom_digits', 2)), depends=['time_uom_digits'])
     time_uom = fields.Many2One('product.uom', 'Uom', required=True, domain=[
             ('category', '=', Id('product', 'uom_cat_time')),
             ], on_change_with=['work_center', 'work_center_category'])
     time_uom_digits = fields.Function(fields.Integer('Time UOM Digits',
             on_change_with=['uom']), 'on_change_with_time_uom_digits')
-    cost = fields.Function(fields.Numeric('Cost', on_change_with=['time',
-                'cost_price', 'time_uom', 'work_center',
-                'work_center_category']), 'on_change_with_cost')
+    quantity = fields.Float('Quantity', states={
+            'required': Eval('calculation') == 'standard',
+            'invisible': Eval('calculation') != 'standard',
+            },
+        digits=(16, Eval('quantity_uom_digits', 2)),
+        depends=['quantity_uom_digits', 'calculation'],
+        help='Quantity of the production product processed by the specified '
+        'time.' )
+    quantity_uom = fields.Many2One('product.uom', 'Quantity UOM', states={
+            'required': Eval('calculation') == 'standard',
+            'invisible': Eval('calculation') != 'standard',
+            }, domain=[
+            If(Bool(Eval('quantity_uom_category', 0)),
+            ('category', '=', Eval('quantity_uom_category')),
+            (),
+            )], depends=['quantity_uom_category'])
+    calculation = fields.Selection([
+            ('standard', 'Standard'),
+            ('fixed', 'Fixed'),
+            ], 'Calculation', required=True, help='Use Standard to multiply '
+        'the amount of time by the number of units produced. Use Fixed to use '
+        'the indicated time in the production without considering the '
+        'quantities produced. The latter is useful for a setup or cleaning '
+        'operation, for example.')
+    quantity_uom_digits = fields.Function(fields.Integer('Quantity UOM Digits',
+            on_change_with=['quantity_uom']),
+        'on_change_with_quantity_uom_digits')
+    quantity_uom_category = fields.Function(fields.Many2One(
+            'product.uom.category', 'Quantity UOM Category'),
+        'get_quantity_uom_category')
+    cost = fields.Function(fields.Numeric('Cost', digits=(16, 4),
+            on_change_with=['time', 'time_uom', 'calculation', 'quantity',
+                'quantity_uom', 'cost_price', 'work_center',
+                'work_center_category', '_parent_plan.uom']),
+        'on_change_with_cost')
 
-    def on_change_route_operation(self):
-        res = {}
-        route = self.route_operation
-        if not route:
-            return res
-        if route.work_center:
-            res['work_center'] = route.work_center.id
-        if route.work_center_category:
-            res['work_center_category'] = route.work_center_category.id
-        if route.time_uom:
-            res['time_uom'] = route.time_uom.id
-        if route.time:
-            res['time'] = route.time
-        return res
+    @classmethod
+    def __setup__(cls):
+        super(PlanOperationLine, cls).__setup__()
+        cls._order.insert(0, ('sequence', 'ASC'))
+
+    @staticmethod
+    def order_sequence(tables):
+        table, _ = tables[None]
+        return [table.sequence == None, table.sequence]
 
     def on_change_with_time_uom(self):
         if self.work_center:
@@ -58,11 +88,29 @@ class PlanOperationLine(ModelSQL, ModelView):
         pool = Pool()
         Uom = pool.get('product.uom')
         wc = self.work_center or self.work_center_category
-        if not wc:
-            return Decimal('0.0')
-        time = Uom.compute_qty(self.time_uom, self.time,
-            wc.uom)
-        return Decimal(str(time)) * wc.cost_price
+        if not wc or not self.time:
+            return _ZERO
+        qty = 1
+        time = Uom.compute_qty(self.time_uom, self.time, wc.uom, round=False)
+        if self.calculation == 'standard':
+            if not self.quantity:
+                return None
+            quantity = Uom.compute_qty(self.quantity_uom, self.quantity,
+                self.plan.uom, round=False)
+            time *= (qty / quantity)
+        cost = Decimal(str(time)) * wc.cost_price
+        cost /= qty
+        digits = self.__class__.cost.digits[1]
+        return cost.quantize(Decimal(str(10 ** -digits)))
+
+    def get_quantity_uom_category(self, name):
+        if self.plan and self.plan.uom:
+            return self.plan.uom.category.id
+
+    def on_change_with_quantity_uom_digits(self, name=None):
+        if self.quantity_uom:
+            return self.quantity_uom.digits
+        return 2
 
 
 class Plan:
@@ -94,22 +142,17 @@ class Plan:
             #factor = self.bom.compute_factor(self.product, 1,
                 #self.product.default_uom)
         for operation in self.route.operations:
-            work_center = None
-            work_center_category = None
-            if operation.work_center:
-                work_center = operation.work_center
-            elif operation.work_center_category:
-                work_center_category = operation.work_center_category
-
-            wc = work_center or work_center_category
-            operations['add'].append({
-                    'work_center': work_center and work_center.id or None,
-                    'work_center_category': work_center_category and
-                        work_center_category.id or None,
-                    'route_operation': operation.id,
-                    'time_uom': operation.time_uom.id,
-                    'time': operation.time * factor,
-                    })
+            values = {}
+            for field in ('work_center', 'work_center_category', 'time_uom',
+                    'quantity_uom', 'quantity_uom_category', 'operation_type',
+                    'quantity_uom_digits', 'time', 'quantity', 'calculation'):
+                value = getattr(operation, field)
+                if value:
+                    if isinstance(value, ModelSQL):
+                        values[field] = value.id
+                    else:
+                        values[field] = value
+            operations['add'].append(values)
         return changes
 
     def on_change_route(self):

@@ -1,12 +1,16 @@
 <?xml version="1.0"?>
 <!-- The COPYRIGHT file at the top level of this repository contains the full
      copyright notices and license terms. -->
-<tree string="Product Cost Plan Operation" editable="bottom">
+<tree string="Product Cost Plan Operation" editable="bottom" sequence="sequence">
+    <field name="sequence" tree_invisible="1"/>
     <field name="plan"/>
-    <field name="route_operation"/>
+    <field name="operation_type"/>
     <field name="work_center"/>
     <field name="work_center_category"/>
     <field name="time"/>
     <field name="time_uom"/>
+    <field name="calculation"/>
+    <field name="quantity"/>
+    <field name="quantity_uom"/>
     <field name="cost"/>
 </tree>

@@ -76,6 +76,7 @@ Create a route with two operations on diferent work center::
     >>> clean = OperationType(name='clean')
     >>> clean.save()
     >>> hour, = ProductUom.find([('name', '=', 'Hour')])
+    >>> unit, = ProductUom.find([('name', '=', 'Unit')])
     >>> WorkCenter = Model.get('production.work_center')
     >>> WorkCenterCategory = Model.get('production.work_center.category')
     >>> category = WorkCenterCategory()
@@ -98,20 +99,27 @@ Create a route with two operations on diferent work center::
     >>> workcenter2.cost_price = Decimal('50.0')
     >>> workcenter2.save()
     >>> route = Route(name='default route')
+    >>> route.uom = unit
     >>> route_operation = RouteOperation()
     >>> route.operations.append(route_operation)
     >>> route_operation.sequence = 1
     >>> route_operation.operation_type = assembly
     >>> route_operation.work_center_category = category
     >>> route_operation.work_center = workcenter1
-    >>> route_operation.quantity = 5
+    >>> route_operation.time = 5
+    >>> route_operation.time_uom = hour
+    >>> route_operation.quantity = 1
+    >>> route_operation.quantity_uom = unit
     >>> route_operation = RouteOperation()
     >>> route.operations.append(route_operation)
     >>> route_operation.sequence = 2
     >>> route_operation.operation_type = clean
     >>> route_operation.work_center_category = category
     >>> route_operation.work_center = workcenter2
+    >>> route_operation.time = 1
+    >>> route_operation.time_uom = hour
     >>> route_operation.quantity = 1
+    >>> route_operation.quantity_uom = unit
     >>> route.save()
     >>> route.reload()
     >>> len(route.operations) == 2
@@ -120,7 +128,6 @@ Create a route with two operations on diferent work center::
 
 Create product::
 
-    >>> unit, = ProductUom.find([('name', '=', 'Unit')])
     >>> ProductTemplate = Model.get('product.template')
     >>> Product = Model.get('product.product')
     >>> product = Product()
@@ -165,7 +172,7 @@ Create Bill of Material::
     >>> BOM = Model.get('production.bom')
     >>> BOMInput = Model.get('production.bom.input')
     >>> BOMOutput = Model.get('production.bom.output')
-    >>> bom = BOM(name='product', route=route)
+    >>> bom = BOM(name='product')
     >>> input1 = BOMInput()
     >>> bom.inputs.append(input1)
     >>> input1.product = component1
@@ -232,7 +239,7 @@ Create a cost plan for product::
     True
     >>> plan.operation_cost == Decimal('175.0')
     True
-    >>> plan.total_cost == plan.product_cost + plan.operation_cost
+    >>> plan.cost_price == plan.product_cost + plan.operation_cost
     True
 
 Create a cost plan for 10 units::
@@ -255,5 +262,5 @@ Create a cost plan for 10 units::
     True
     >>> plan.operation_cost == Decimal('1750')
     True
-    >>> plan.total_cost == plan.product_cost + plan.operation_cost
+    >>> plan.cost_price == plan.product_cost + plan.operation_cost
     True
