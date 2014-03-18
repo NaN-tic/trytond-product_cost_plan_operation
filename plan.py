@@ -79,7 +79,7 @@ class PlanOperationLine(ModelSQL, ModelView):
         if self.work_center_category:
             return self.work_center_category.uom.id
 
-    def on_change_with_uom_digits(self, name=None):
+    def on_change_with_time_uom_digits(self, name=None):
         if self.time_uom:
             return self.time_uom.digits
         return 2
