@@ -13,7 +13,8 @@ class PlanOperationLine(ModelSQL, ModelView):
     'Product Cost Plan Operation Line'
     __name__ = 'product.cost.plan.operation_line'
 
-    plan = fields.Many2One('product.cost.plan', 'Plan', required=True)
+    plan = fields.Many2One('product.cost.plan', 'Plan', required=True,
+        ondelete='CASCADE')
     sequence = fields.Integer('Sequence')
     work_center = fields.Many2One('production.work_center', 'Work Center')
     work_center_category = fields.Many2One('production.work_center.category',
@@ -165,14 +166,9 @@ class Plan:
         return cost
 
     def on_change_operations(self):
-        pool = Pool()
-        CostType = pool.get('product.cost.plan.cost.type')
-        ModelData = pool.get('ir.model.data')
-
-        type_ = CostType(ModelData.get_id('product_cost_plan_operation',
-                'operations'))
         self.operation_cost = sum(o.cost for o in self.operations if o.cost)
-        return self.update_cost_type(type_, self.operation_cost)
+        return self.update_cost_type('product_cost_plan_operation',
+            'operations', self.operation_cost)
 
     @classmethod
     def get_cost_types(cls):
