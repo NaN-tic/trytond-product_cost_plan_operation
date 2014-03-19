@@ -250,7 +250,6 @@ Create a cost plan for 10 units::
     >>> plan.route = route
     >>> len(plan.operations) == 2
     True
-    >>> plan.quantity = 10
     >>> plan.save()
     >>> plan.state
     u'draft'
@@ -260,7 +259,7 @@ Create a cost plan for 10 units::
     u'computed'
     >>> len(plan.products) == 2
     True
-    >>> plan.operation_cost == Decimal('1750')
+    >>> plan.operation_cost == Decimal('175.0')
     True
     >>> plan.cost_price == plan.product_cost + plan.operation_cost
     True
