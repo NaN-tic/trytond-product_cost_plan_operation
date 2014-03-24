@@ -7,6 +7,7 @@ __all__ = ['PlanOperationLine', 'Plan']
 __metaclass__ = PoolMeta
 
 _ZERO = Decimal('0.0')
+DIGITS = (16, 5)
 
 
 class PlanOperationLine(ModelSQL, ModelView):
@@ -16,18 +17,23 @@ class PlanOperationLine(ModelSQL, ModelView):
     plan = fields.Many2One('product.cost.plan', 'Plan', required=True,
         ondelete='CASCADE')
     sequence = fields.Integer('Sequence')
+    parent = fields.Many2One('product.cost.plan.operation_line', 'Parent')
+    children = fields.One2Many('product.cost.plan.operation_line', 'parent',
+        'Children')
     work_center = fields.Many2One('production.work_center', 'Work Center')
     work_center_category = fields.Many2One('production.work_center.category',
         'Work Center Category')
     operation_type = fields.Many2One('production.operation.type',
         'Operation Type')
-    time = fields.Float('Quantity', required=True,
+    time = fields.Float('Time', required=True,
         digits=(16, Eval('time_uom_digits', 2)), depends=['time_uom_digits'])
-    time_uom = fields.Many2One('product.uom', 'Uom', required=True, domain=[
+    time_uom = fields.Many2One('product.uom', 'Time UOM', required=True,
+        domain=[
             ('category', '=', Id('product', 'uom_cat_time')),
             ], on_change_with=['work_center', 'work_center_category'])
     time_uom_digits = fields.Function(fields.Integer('Time UOM Digits',
             on_change_with=['uom']), 'on_change_with_time_uom_digits')
+    children_quantity = fields.Float('Children Quantity')
     quantity = fields.Float('Quantity', states={
             'required': Eval('calculation') == 'standard',
             'invisible': Eval('calculation') != 'standard',
@@ -58,16 +64,21 @@ class PlanOperationLine(ModelSQL, ModelView):
     quantity_uom_category = fields.Function(fields.Many2One(
             'product.uom.category', 'Quantity UOM Category'),
         'get_quantity_uom_category')
-    cost = fields.Function(fields.Numeric('Cost', digits=(16, 4),
+    cost = fields.Function(fields.Numeric('Cost', digits=DIGITS,
             on_change_with=['time', 'time_uom', 'calculation', 'quantity',
                 'quantity_uom', 'cost_price', 'work_center',
-                'work_center_category', '_parent_plan.uom']),
+                'work_center_category', '_parent_plan.uom', 'children',
+                'children_quantity']),
         'on_change_with_cost')
 
     @classmethod
     def __setup__(cls):
         super(PlanOperationLine, cls).__setup__()
         cls._order.insert(0, ('sequence', 'ASC'))
+
+    @staticmethod
+    def default_calculation():
+        return 'standard'
 
     @staticmethod
     def order_sequence(tables):
@@ -101,6 +112,8 @@ class PlanOperationLine(ModelSQL, ModelView):
             time *= (qty / quantity)
         cost = Decimal(str(time)) * wc.cost_price
         cost /= qty
+        for child in self.children:
+            cost += Decimal(str(self.children_quantity or 0)) * child.cost
         digits = self.__class__.cost.digits[1]
         return cost.quantize(Decimal(str(10 ** -digits)))
 
@@ -125,8 +138,13 @@ class Plan:
         depends=['state'])
     operations = fields.One2Many('product.cost.plan.operation_line', 'plan',
         'Operation Lines', on_change=['costs', 'operations'])
+    operations_tree = fields.Function(fields.One2Many(
+            'product.cost.plan.operation_line', 'plan', 'Operation Lines',
+            on_change=['costs', 'operations_tree', 'quantity']),
+        'get_operations_tree', setter='set_operations_tree')
     operation_cost = fields.Function(fields.Numeric('Operation Cost',
-            on_change_with=['operations']), 'on_change_with_operation_cost')
+            on_change_with=['operations_tree', 'quantity'], digits=DIGITS),
+        'on_change_with_operation_cost')
 
     def update_operations(self):
         if not self.route:
@@ -156,17 +174,35 @@ class Plan:
             operations['add'].append(values)
         return changes
 
+    def get_operations_tree(self, name):
+        return [x.id for x in self.operations if not x.parent]
+
+    @classmethod
+    def set_operations_tree(cls, lines, name, value):
+        cls.write(lines, {
+                'operations': value,
+                })
+
     def on_change_route(self):
         return self.update_operations()
 
     def on_change_with_operation_cost(self, name=None):
+        if not self.quantity:
+            return Decimal('0.0')
         cost = Decimal('0.0')
-        for operation in self.operations:
+        for operation in self.operations_tree:
             cost += operation.cost or Decimal('0.0')
-        return cost
+        cost = cost / Decimal(str(self.quantity))
+        digits = self.__class__.operation_cost.digits[1]
+        return cost.quantize(Decimal(str(10 ** -digits)))
 
     def on_change_operations(self):
         self.operation_cost = sum(o.cost for o in self.operations if o.cost)
+        return self.update_cost_type('product_cost_plan_operation',
+            'operations', self.operation_cost)
+
+    def on_change_operations_tree(self):
+        self.operation_cost = self.on_change_with_operation_cost()
         return self.update_cost_type('product_cost_plan_operation',
             'operations', self.operation_cost)
 
