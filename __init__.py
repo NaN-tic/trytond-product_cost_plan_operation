@@ -9,4 +9,8 @@ def register():
     Pool.register(
         PlanOperationLine,
         Plan,
+        CreateRouteStart,
         module='product_cost_plan_operation', type_='model')
+    Pool.register(
+        CreateRoute,
+        module='product_cost_plan_operation', type_='wizard')

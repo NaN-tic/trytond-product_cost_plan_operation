@@ -2,8 +2,10 @@ from decimal import Decimal
 from trytond.model import ModelSQL, ModelView, fields
 from trytond.pool import Pool, PoolMeta
 from trytond.pyson import Eval, Id, If, Bool
+from trytond.transaction import Transaction
+from trytond.wizard import Wizard, StateView, StateAction, Button
 
-__all__ = ['PlanOperationLine', 'Plan']
+__all__ = ['PlanOperationLine', 'Plan', 'CreateRouteStart', 'CreateRoute']
 __metaclass__ = PoolMeta
 
 _ZERO = Decimal('0.0')
@@ -41,7 +43,7 @@ class PlanOperationLine(ModelSQL, ModelView):
         digits=(16, Eval('quantity_uom_digits', 2)),
         depends=['quantity_uom_digits', 'calculation'],
         help='Quantity of the production product processed by the specified '
-        'time.' )
+        'time.')
     quantity_uom = fields.Many2One('product.uom', 'Quantity UOM', states={
             'required': Eval('calculation') == 'standard',
             'invisible': Eval('calculation') != 'standard',
@@ -220,3 +222,65 @@ class Plan:
             'operations'))
         ret.append((type_, 'operation_cost'))
         return ret
+
+
+class CreateRouteStart(ModelView):
+    'Create Route Start'
+    __name__ = 'product.cost.plan.create_route.start'
+
+    name = fields.Char('Name', required=True)
+    uom = fields.Many2One('product.uom', 'UOM', required=True)
+    operations = fields.One2Many('production.route.operation', 'route',
+        'Operations')
+
+
+class CreateRoute(Wizard):
+    'Create Route'
+    __name__ = 'product.cost.plan.create_route'
+
+    start = StateView('product.cost.plan.create_route.start',
+        'product_cost_plan_operation.create_route_start_view_form', [
+            Button('Cancel', 'end', 'tryton-cancel'),
+            Button('Ok', 'route', 'tryton-ok', True),
+            ])
+    route = StateAction('production_route.act_production_route')
+
+    def default_start(self, fields):
+        pool = Pool()
+        CostPlan = pool.get('product.cost.plan')
+
+        operations = []
+        plan = CostPlan(Transaction().context.get('active_id'))
+        for line in plan.operations:
+            operations.append(self._get_operation_line(line))
+
+        return {'operations': operations, 'uom': plan.uom.id}
+
+    def do_route(self, action):
+        route = Pool().get('production.route')
+
+        route = route()
+        route.name = self.start.name
+        route.uom = self.start.uom
+        route.operations = self.start.operations
+        route.save()
+        data = {'res_id': [route.id]}
+        action['views'].reverse()
+        return action, data
+
+    def _get_operation_line(self, line):
+        'Returns the operation to create from a cost plan operation line'
+        return {
+            'operation_type': (line.operation_type.id if line.operation_type
+                else None),
+            'work_center': (line.work_center.id if line.work_center
+                else None),
+            'work_center_category': (line.work_center_category.id
+                if line.work_center_category else None),
+            'time': line.time,
+            'time_uom': line.time_uom.id,
+            'calculation': line.calculation,
+            'quantity': line.quantity,
+            'quantity_uom': (line.quantity_uom.id if line.quantity_uom
+                else None),
+            }

@@ -14,6 +14,26 @@ msgctxt "field:product.cost.plan,route:"
 msgid "Route"
 msgstr "Ruta"
 
+msgctxt "field:product.cost.plan.create_route.start,id:"
+msgid "ID"
+msgstr "Identificador"
+
+msgctxt "field:product.cost.plan.create_route.start,name:"
+msgid "Name"
+msgstr "Nom"
+
+msgctxt "field:product.cost.plan.create_route.start,operations:"
+msgid "Operations"
+msgstr "Operacions"
+
+msgctxt "field:product.cost.plan.create_route.start,uom:"
+msgid "UOM"
+msgstr "UdM"
+
+msgctxt "field:product.cost.plan.operation_line,calculation:"
+msgid "Calculation"
+msgstr "Cálcul"
+
 msgctxt "field:product.cost.plan.operation_line,cost:"
 msgid "Cost"
 msgstr "Cost"
@@ -30,6 +50,10 @@ msgctxt "field:product.cost.plan.operation_line,id:"
 msgid "ID"
 msgstr "Identificador"
 
+msgctxt "field:product.cost.plan.operation_line,operation_type:"
+msgid "Operation Type"
+msgstr "Tipus d'operació"
+
 msgctxt "field:product.cost.plan.operation_line,plan:"
 msgid "Plan"
 msgstr "Pla"
@@ -38,25 +62,37 @@ msgctxt "field:product.cost.plan.operation_line,quantity:"
 msgid "Quantity"
 msgstr "Quantitat"
 
+msgctxt "field:product.cost.plan.operation_line,quantity_uom:"
+msgid "Quantity UOM"
+msgstr "UdM Quantitat"
+
+msgctxt "field:product.cost.plan.operation_line,quantity_uom_category:"
+msgid "Quantity UOM Category"
+msgstr "Categoria UdM Quantitat"
+
+msgctxt "field:product.cost.plan.operation_line,quantity_uom_digits:"
+msgid "Quantity UOM Digits"
+msgstr "Digits UdM Quantitat"
+
 msgctxt "field:product.cost.plan.operation_line,rec_name:"
 msgid "Name"
 msgstr "Nom"
 
-msgctxt "field:product.cost.plan.operation_line,route_operation:"
-msgid "Route Operation"
-msgstr "Ruta"
+msgctxt "field:product.cost.plan.operation_line,sequence:"
+msgid "Sequence"
+msgstr "Seqüència"
 
-msgctxt "field:product.cost.plan.operation_line,unit_digits:"
-msgid "Unit Digits"
-msgstr "Decimals unitaris"
+msgctxt "field:product.cost.plan.operation_line,time:"
+msgid "Time"
+msgstr "Temps"
 
-msgctxt "field:product.cost.plan.operation_line,uom:"
-msgid "Uom"
-msgstr "UdM"
+msgctxt "field:product.cost.plan.operation_line,time_uom:"
+msgid "Time UOM"
+msgstr "UdM Temps"
 
-msgctxt "field:product.cost.plan.operation_line,uom_category:"
-msgid "Uom Category"
-msgstr "Categoria d'UdM"
+msgctxt "field:product.cost.plan.operation_line,time_uom_digits:"
+msgid "Time UOM Digits"
+msgstr "Dígits UdM Temps"
 
 msgctxt "field:product.cost.plan.operation_line,work_center:"
 msgid "Work Center"
@@ -74,17 +110,53 @@ msgctxt "field:product.cost.plan.operation_line,write_uid:"
 msgid "Write User"
 msgstr "Usuari modificació"
 
+msgctxt "help:product.cost.plan.operation_line,calculation:"
+msgid ""
+"Use Standard to multiply the amount of time by the number of units produced."
+" Use Fixed to use the indicated time in the production without considering "
+"the quantities produced. The latter is useful for a setup or cleaning "
+"operation, for example."
+msgstr ""
+"Utilizeu estandar per multiplicar la quantitat de temps pel número d'unitats"
+" produïdes. Utilitzeu Fix per utilitzar el temps indicat sense considerar "
+"les quantitats produïdes. La segons pot ser últim per a operacións de "
+"preparació o de neteja, per exemple. "
+
+msgctxt "help:product.cost.plan.operation_line,quantity:"
+msgid "Quantity of the production product processed by the specified time."
+msgstr "Quantitat del producte processada en el temps especificat."
+
 msgctxt "model:ir.action,name:act_product_cost_plan_operation_line"
 msgid "Product Cost Plan Operation"
 msgstr "Operació del Pla de costos del producte"
+
+msgctxt "model:ir.action,name:wizard_create_route"
+msgid "Create Route"
+msgstr "Crear ruta"
 
 msgctxt "model:product.cost.plan.cost.type,name:operations"
 msgid "Operations"
 msgstr "Operacions"
 
+msgctxt "model:product.cost.plan.create_route.start,name:"
+msgid "Create Route Start"
+msgstr "Inici crear ruta"
+
 msgctxt "model:product.cost.plan.operation_line,name:"
 msgid "Product Cost Plan Operation Line"
 msgstr "Operació del Pla de costos del producte"
+
+msgctxt "selection:product.cost.plan.operation_line,calculation:"
+msgid "Fixed"
+msgstr "Fix"
+
+msgctxt "selection:product.cost.plan.operation_line,calculation:"
+msgid "Standard"
+msgstr "Estàndard"
+
+msgctxt "view:product.cost.plan.create_route.start:"
+msgid "Create Route"
+msgstr "Crear ruta"
 
 msgctxt "view:product.cost.plan.operation_line:"
 msgid "Product Cost Plan BOM"
@@ -97,3 +169,11 @@ msgstr "Operació del Pla de costos del producte"
 msgctxt "view:product.cost.plan:"
 msgid "Operations"
 msgstr "Operacions"
+
+msgctxt "wizard_button:product.cost.plan.create_route,start,end:"
+msgid "Cancel"
+msgstr "Cancel·lat"
+
+msgctxt "wizard_button:product.cost.plan.create_route,start,route:"
+msgid "Ok"
+msgstr "D'acord"

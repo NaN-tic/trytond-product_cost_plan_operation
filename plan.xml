@@ -70,5 +70,26 @@
         <record model="product.cost.plan.cost.type" id="operations">
             <field name="name">Operations</field>
         </record>
+        <record model="ir.ui.view" id="create_route_start_view_form">
+            <field name="model">product.cost.plan.create_route.start</field>
+            <field name="type">form</field>
+            <field name="name">create_route_start_form</field>
+        </record>
+
+        <record model="ir.action.wizard" id="wizard_create_route">
+            <field name="name">Create Route</field>
+            <field name="wiz_name">product.cost.plan.create_route</field>
+        </record>
+        <record model="ir.action.keyword" id="act_create_route_keyword1">
+            <field name="keyword">form_action</field>
+            <field name="model">product.cost.plan,-1</field>
+            <field name="action" ref="wizard_create_route"/>
+        </record>
+        <record model="ir.action-res.group"
+                id="wizard_create_route-group_production_admin">
+            <field name="action" ref="wizard_create_route"/>
+            <field name="group" ref="production.group_production_admin"/>
+        </record>
+
     </data>
 </tryton>

@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<!-- The COPYRIGHT file at the top level of this repository contains the full
+      copyright notices and license terms. -->
+<form string="Create Route">
+    <label name="name"/>
+    <field name="name"/>
+    <label name="uom"/>
+    <field name="uom"/>
+    <field name="operations" colspan="4"/>
+</form>
