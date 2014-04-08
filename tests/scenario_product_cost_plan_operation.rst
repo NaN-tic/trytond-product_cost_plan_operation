@@ -248,6 +248,7 @@ Create a cost plan for 10 units::
     >>> plan = CostPlan()
     >>> plan.product = product
     >>> plan.route = route
+    >>> plan.quantity = 1
     >>> len(plan.operations) == 2
     True
     >>> plan.save()

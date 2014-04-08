@@ -3,8 +3,5 @@
       copyright notices and license terms. -->
 <form string="Create Route">
     <label name="name"/>
-    <field name="name"/>
-    <label name="uom"/>
-    <field name="uom"/>
-    <field name="operations" colspan="4"/>
+    <field name="name" colspan="3"/>
 </form>

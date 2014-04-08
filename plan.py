@@ -148,6 +148,14 @@ class Plan:
             on_change_with=['operations_tree', 'quantity'], digits=DIGITS),
         'on_change_with_operation_cost')
 
+    @classmethod
+    def __setup__(cls):
+        super(Plan, cls).__setup__()
+        cls._error_messages.update({
+                'route_already_exists': ('A route already exists for cost plan '
+                    '"%s".'),
+                })
+
     def update_operations(self):
         if not self.route:
             return {}
@@ -223,15 +231,46 @@ class Plan:
         ret.append((type_, 'operation_cost'))
         return ret
 
+    def create_route(self, name):
+        Route = Pool().get('production.route')
+        if self.route:
+            self.raise_user_error('route_already_exists', self.rec_name)
+
+        route = Route()
+        route.name = name
+        route.uom = self.uom
+        route.operations = self._get_route_operations()
+        route.save()
+        self.route = route
+        self.save()
+        return route
+
+    def _get_route_operations(self):
+        operations = []
+        for line in self.operations:
+            operations.append(self._get_operation_line(line))
+        return operations
+
+    def _get_operation_line(self, line):
+        'Returns the operation to create from a cost plan operation line'
+        Operation = Pool().get('production.route.operation')
+        operation = Operation()
+        operation.operation_type = line.operation_type
+        operation.work_center = line.work_center
+        operation.work_center_category = line.work_center_category
+        operation.time = line.time
+        operation.time_uom = line.time_uom
+        operation.calculation = line.calculation
+        operation.quantity = line.quantity
+        operation.quantity_uom = line.quantity_uom
+        return operation
+
 
 class CreateRouteStart(ModelView):
     'Create Route Start'
     __name__ = 'product.cost.plan.create_route.start'
 
     name = fields.Char('Name', required=True)
-    uom = fields.Many2One('product.uom', 'UOM', required=True)
-    operations = fields.One2Many('production.route.operation', 'route',
-        'Operations')
 
 
 class CreateRoute(Wizard):
@@ -246,41 +285,18 @@ class CreateRoute(Wizard):
     route = StateAction('production_route.act_production_route')
 
     def default_start(self, fields):
-        pool = Pool()
-        CostPlan = pool.get('product.cost.plan')
-
-        operations = []
+        CostPlan = Pool().get('product.cost.plan')
         plan = CostPlan(Transaction().context.get('active_id'))
-        for line in plan.operations:
-            operations.append(self._get_operation_line(line))
-
-        return {'operations': operations, 'uom': plan.uom.id}
+        return {
+            'name': plan.product.rec_name,
+            }
 
     def do_route(self, action):
-        route = Pool().get('production.route')
-
-        route = route()
-        route.name = self.start.name
-        route.uom = self.start.uom
-        route.operations = self.start.operations
-        route.save()
-        data = {'res_id': [route.id]}
+        CostPlan = Pool().get('product.cost.plan')
+        plan = CostPlan(Transaction().context.get('active_id'))
+        route = plan.create_route(self.start.name)
+        data = {
+            'res_id':[route.id],
+            }
         action['views'].reverse()
         return action, data
-
-    def _get_operation_line(self, line):
-        'Returns the operation to create from a cost plan operation line'
-        return {
-            'operation_type': (line.operation_type.id if line.operation_type
-                else None),
-            'work_center': (line.work_center.id if line.work_center
-                else None),
-            'work_center_category': (line.work_center_category.id
-                if line.work_center_category else None),
-            'time': line.time,
-            'time_uom': line.time_uom.id,
-            'calculation': line.calculation,
-            'quantity': line.quantity,
-            'quantity_uom': (line.quantity_uom.id if line.quantity_uom
-                else None),
-            }
