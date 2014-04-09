@@ -132,7 +132,9 @@ class PlanOperationLine(ModelSQL, ModelView):
 class Plan:
     __name__ = 'product.cost.plan'
 
-    route = fields.Many2One('production.route', 'Route')
+    route = fields.Many2One('production.route', 'Route', domain=[
+            ('uom', '=', Eval('uom'))
+            ], depends=['uom'])
     operations = fields.One2Many('product.cost.plan.operation_line', 'plan',
         'Operation Lines', on_change=['costs', 'operations'])
     operations_tree = fields.Function(fields.One2Many(
@@ -154,26 +156,28 @@ class Plan:
     @classmethod
     @ModelView.button
     def compute(cls, plans):
-        super(Plan, cls).compute(plans)
+        to_create = []
+        to_delete = []
         for plan in plans:
-            plan.update_operations()
-
-    def update_operations(self):
-        if not self.route:
-            return {}
-        OperationLine = Pool().get('product.cost.plan.operation_line')
-        OperationLine.delete(self.operations)
-        factor = 1.0
-        lines = []
-        for operation in self.route.operations:
-            line = OperationLine()
-            for field in ('work_center', 'work_center_category', 'time_uom',
-                    'quantity_uom', 'quantity_uom_category', 'operation_type',
-                    'quantity_uom_digits', 'time', 'quantity', 'calculation'):
-                setattr(line, field, getattr(operation, field))
-            line.plan = self
-            lines.append(line)
-        OperationLine.create([x._save_values for x in lines])
+            if not plan.route:
+                continue
+            OperationLine = Pool().get('product.cost.plan.operation_line')
+            to_delete.extend(plan.operations)
+            factor = 1.0
+            for operation in plan.route.operations:
+                line = OperationLine()
+                for field in ('work_center', 'work_center_category', 'time_uom',
+                        'quantity_uom', 'quantity_uom_category', 'operation_type',
+                        'quantity_uom_digits', 'time', 'quantity', 'calculation'):
+                    setattr(line, field, getattr(operation, field))
+                line.plan = plan
+                to_create.append(line._save_values)
+        if to_delete:
+            OperationLine.delete(to_delete)
+        if to_create:
+            OperationLine.create(to_create)
+        # Super must be executed at the end because it updates the costs
+        super(Plan, cls).compute(plans)
 
     def get_operations_tree(self, name):
         return [x.id for x in self.operations if not x.parent]
