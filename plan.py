@@ -178,6 +178,8 @@ class Plan:
         cls._error_messages.update({
                 'route_already_exists': ('A route already exists for cost plan '
                     '"%s".'),
+                'product_already_has_route': ('Product "%s" already has a '
+                    'route assigned.'),
                 })
 
     @classmethod
@@ -271,6 +273,9 @@ class Plan:
         ProductBOM()
         if self.product.boms:
             product_bom = self.product.boms[0]
+            if product_bom.route:
+                self.raise_user_error('product_already_has_route',
+                    self.product.rec_name)
         else:
             product_bom = ProductBOM()
         product_bom.product = self.product
