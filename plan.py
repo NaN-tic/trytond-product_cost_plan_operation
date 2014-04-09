@@ -254,7 +254,9 @@ class Plan:
         return ret
 
     def create_route(self, name):
-        Route = Pool().get('production.route')
+        pool = Pool()
+        Route = pool.get('production.route')
+        ProductBOM = pool.get('product.product-production.bom')
         if self.route:
             self.raise_user_error('route_already_exists', self.rec_name)
 
@@ -265,6 +267,15 @@ class Plan:
         route.save()
         self.route = route
         self.save()
+
+        ProductBOM()
+        if self.product.boms:
+            product_bom = self.product.boms[0]
+        else:
+            product_bom = ProductBOM()
+        product_bom.product = self.product
+        product_bom.route = route
+        product_bom.save()
         return route
 
     def _get_route_operations(self):
