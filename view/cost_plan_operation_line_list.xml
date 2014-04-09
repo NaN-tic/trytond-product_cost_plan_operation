@@ -14,5 +14,6 @@
     <field name="quantity"/>
     <field name="quantity_uom"/>
     <field name="cost"/>
+    <field name="total_unit"/>
     <field name="children" tree_invisible="1"/>
 </tree>

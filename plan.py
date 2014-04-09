@@ -72,6 +72,12 @@ class PlanOperationLine(ModelSQL, ModelView):
                 'work_center_category', '_parent_plan.uom', 'children',
                 'children_quantity']),
         'on_change_with_cost')
+    total_unit = fields.Function(fields.Numeric('Total Unit Cost',
+            digits=DIGITS, on_change_with=['time', 'time_uom', 'calculation',
+                'quantity', 'quantity_uom', 'cost_price', 'work_center',
+                'work_center_category', '_parent_plan.uom', 'children',
+                'children_quantity', '_parent_plan.quantity']),
+        'on_change_with_total_unit')
 
     @classmethod
     def __setup__(cls):
@@ -98,6 +104,12 @@ class PlanOperationLine(ModelSQL, ModelView):
             return self.time_uom.digits
         return 2
 
+    def on_change_with_cost_price(self, name=None):
+        wc = self.work_center or self.work_center_category
+        if not wc or not self.time:
+            return _ZERO
+        return wc.cost_price
+
     def on_change_with_cost(self, name=None):
         pool = Pool()
         Uom = pool.get('product.uom')
@@ -118,6 +130,15 @@ class PlanOperationLine(ModelSQL, ModelView):
             cost += Decimal(str(self.children_quantity or 0)) * child.cost
         digits = self.__class__.cost.digits[1]
         return cost.quantize(Decimal(str(10 ** -digits)))
+
+    def on_change_with_total_unit(self, name=None):
+        total = self.on_change_with_cost(None)
+        if total and self.plan and self.plan.quantity:
+            total /= Decimal(str(self.plan.quantity))
+        else:
+            total = Decimal('0.0')
+        digits = self.__class__.total_unit.digits[1]
+        return total.quantize(Decimal(str(10 ** -digits)))
 
     def on_change_with_quantity_uom(self):
         if self.quantity_uom:
