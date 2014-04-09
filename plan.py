@@ -48,10 +48,9 @@ class PlanOperationLine(ModelSQL, ModelView):
             'required': Eval('calculation') == 'standard',
             'invisible': Eval('calculation') != 'standard',
             }, domain=[
-            If(Bool(Eval('quantity_uom_category', 0)),
             ('category', '=', Eval('quantity_uom_category')),
-            (),
-            )], depends=['quantity_uom_category'])
+            ], depends=['quantity_uom_category'],
+        on_change_with=['quantity', 'quantity_uom', '_parent_plan.uom'])
     calculation = fields.Selection([
             ('standard', 'Standard'),
             ('fixed', 'Fixed'),
@@ -64,8 +63,9 @@ class PlanOperationLine(ModelSQL, ModelView):
             on_change_with=['quantity_uom']),
         'on_change_with_quantity_uom_digits')
     quantity_uom_category = fields.Function(fields.Many2One(
-            'product.uom.category', 'Quantity UOM Category'),
-        'get_quantity_uom_category')
+            'product.uom.category', 'Quantity UOM Category',
+            on_change_with=['_parent_plan.uom', 'quantity']),
+        'on_change_with_quantity_uom_category')
     cost = fields.Function(fields.Numeric('Cost', digits=DIGITS,
             on_change_with=['time', 'time_uom', 'calculation', 'quantity',
                 'quantity_uom', 'cost_price', 'work_center',
@@ -119,7 +119,13 @@ class PlanOperationLine(ModelSQL, ModelView):
         digits = self.__class__.cost.digits[1]
         return cost.quantize(Decimal(str(10 ** -digits)))
 
-    def get_quantity_uom_category(self, name):
+    def on_change_with_quantity_uom(self):
+        if self.quantity_uom:
+            return self.quantity_uom.id
+        if self.plan and self.plan.uom:
+            return self.plan.uom.id
+
+    def on_change_with_quantity_uom_category(self, name=None):
         if self.plan and self.plan.uom:
             return self.plan.uom.category.id
 
