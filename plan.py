@@ -132,12 +132,7 @@ class PlanOperationLine(ModelSQL, ModelView):
 class Plan:
     __name__ = 'product.cost.plan'
 
-    route = fields.Many2One('production.route', 'Route',
-        on_change=['route', 'operations', 'bom', 'product'],
-        states={
-            'readonly': Eval('state') != 'draft',
-            },
-        depends=['state'])
+    route = fields.Many2One('production.route', 'Route')
     operations = fields.One2Many('product.cost.plan.operation_line', 'plan',
         'Operation Lines', on_change=['costs', 'operations'])
     operations_tree = fields.Function(fields.One2Many(
@@ -156,33 +151,29 @@ class Plan:
                     '"%s".'),
                 })
 
+    @classmethod
+    @ModelView.button
+    def compute(cls, plans):
+        super(Plan, cls).compute(plans)
+        for plan in plans:
+            plan.update_operations()
+
     def update_operations(self):
         if not self.route:
             return {}
-        operations = {
-            'remove': [x.id for x in self.operations],
-            'add': [],
-            }
-        changes = {
-            'operations': operations,
-            }
+        OperationLine = Pool().get('product.cost.plan.operation_line')
+        OperationLine.delete(self.operations)
         factor = 1.0
-        #if self.bom and self.bom.route and self.bom.route == self.route:
-            #factor = self.bom.compute_factor(self.product, 1,
-                #self.product.default_uom)
+        lines = []
         for operation in self.route.operations:
-            values = {}
+            line = OperationLine()
             for field in ('work_center', 'work_center_category', 'time_uom',
                     'quantity_uom', 'quantity_uom_category', 'operation_type',
                     'quantity_uom_digits', 'time', 'quantity', 'calculation'):
-                value = getattr(operation, field)
-                if value:
-                    if isinstance(value, ModelSQL):
-                        values[field] = value.id
-                    else:
-                        values[field] = value
-            operations['add'].append(values)
-        return changes
+                setattr(line, field, getattr(operation, field))
+            line.plan = self
+            lines.append(line)
+        OperationLine.create([x._save_values for x in lines])
 
     def get_operations_tree(self, name):
         return [x.id for x in self.operations if not x.parent]

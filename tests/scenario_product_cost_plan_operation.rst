@@ -220,16 +220,12 @@ Create a cost plan for product::
     >>> plan = CostPlan()
     >>> plan.product = product
     >>> plan.route = route
-    >>> len(plan.operations) == 2
-    True
     >>> plan.quantity = 1
     >>> plan.save()
-    >>> plan.state
-    u'draft'
     >>> CostPlan.compute([plan.id], config.context)
     >>> plan.reload()
-    >>> plan.state
-    u'computed'
+    >>> len(plan.operations) == 2
+    True
     >>> len(plan.products) == 2
     True
     >>> product_cost, operation_cost = plan.costs
@@ -252,12 +248,8 @@ Create a cost plan for 10 units::
     >>> len(plan.operations) == 2
     True
     >>> plan.save()
-    >>> plan.state
-    u'draft'
     >>> CostPlan.compute([plan.id], config.context)
     >>> plan.reload()
-    >>> plan.state
-    u'computed'
     >>> len(plan.products) == 2
     True
     >>> plan.operation_cost == Decimal('175.0')
