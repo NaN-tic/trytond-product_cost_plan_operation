@@ -11,6 +11,8 @@
             <field name="operations_tree" colspan="4"/>
             <label name="operation_cost"/>
             <field name="operation_cost"/>
+            <label name="production_quantity"/>
+            <field name="production_quantity"/>
         </page>
     </xpath>
 </data>
