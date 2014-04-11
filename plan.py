@@ -70,13 +70,14 @@ class PlanOperationLine(ModelSQL, ModelView):
             on_change_with=['time', 'time_uom', 'calculation', 'quantity',
                 'quantity_uom', 'cost_price', 'work_center',
                 'work_center_category', '_parent_plan.uom', 'children',
-                'children_quantity']),
+                'children_quantity', '_parent_plan.production_quantity']),
         'on_change_with_cost')
     total_unit = fields.Function(fields.Numeric('Total Unit Cost',
             digits=DIGITS, on_change_with=['time', 'time_uom', 'calculation',
                 'quantity', 'quantity_uom', 'cost_price', 'work_center',
                 'work_center_category', '_parent_plan.uom', 'children',
-                'children_quantity', '_parent_plan.quantity']),
+                'children_quantity', '_parent_plan.quantity',
+                '_parent_plan.production_quantity']),
         'on_change_with_total_unit')
 
     @classmethod
@@ -114,18 +115,19 @@ class PlanOperationLine(ModelSQL, ModelView):
         pool = Pool()
         Uom = pool.get('product.uom')
         wc = self.work_center or self.work_center_category
-        if not wc or not self.time:
+        production_quantity = (self.plan.production_quantity if self.plan
+            else None)
+        if not (wc and self.time and production_quantity):
             return _ZERO
-        qty = 1
         time = Uom.compute_qty(self.time_uom, self.time, wc.uom, round=False)
         if self.calculation == 'standard':
             if not self.quantity:
                 return None
             quantity = Uom.compute_qty(self.quantity_uom, self.quantity,
                 self.plan.uom, round=False)
-            time *= (qty / quantity)
+            time *= (production_quantity / quantity)
         cost = Decimal(str(time)) * wc.cost_price
-        cost /= qty
+        cost /= Decimal(str(production_quantity))
         for child in self.children:
             cost += Decimal(str(self.children_quantity or 0)) * child.cost
         digits = self.__class__.cost.digits[1]
@@ -171,6 +173,8 @@ class Plan:
     operation_cost = fields.Function(fields.Numeric('Operation Cost',
             on_change_with=['operations_tree', 'quantity'], digits=DIGITS),
         'on_change_with_operation_cost')
+    production_quantity = fields.Float('Production Quantity', required=True,
+        on_change_with=['quantity'])
 
     @classmethod
     def __setup__(cls):
@@ -217,8 +221,8 @@ class Plan:
                 'operations': value,
                 })
 
-    def on_change_route(self):
-        return self.update_operations()
+    def on_change_with_production_quantity(self):
+        return self.quantity
 
     def on_change_with_operation_cost(self, name=None):
         if not self.quantity:
