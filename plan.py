@@ -27,6 +27,7 @@ class PlanOperationLine(ModelSQL, ModelView):
         'Work Center Category')
     operation_type = fields.Many2One('production.operation.type',
         'Operation Type')
+    name = fields.Char('Name')
     time = fields.Float('Time', required=True,
         digits=(16, Eval('time_uom_digits', 2)), depends=['time_uom_digits'])
     time_uom = fields.Many2One('product.uom', 'Time UOM', required=True,
@@ -117,19 +118,20 @@ class PlanOperationLine(ModelSQL, ModelView):
         wc = self.work_center or self.work_center_category
         production_quantity = (self.plan.production_quantity if self.plan
             else None)
-        if not (wc and self.time and production_quantity):
-            return _ZERO
-        time = Uom.compute_qty(self.time_uom, self.time, wc.uom, round=False)
-        if self.calculation == 'standard':
-            if not self.quantity:
-                return None
-            quantity = Uom.compute_qty(self.quantity_uom, self.quantity,
-                self.plan.uom, round=False)
-            time *= (production_quantity / quantity)
-        cost = Decimal(str(time)) * wc.cost_price
-        cost /= Decimal(str(production_quantity))
+        cost = _ZERO
+        if wc and self.time and production_quantity:
+            time = Uom.compute_qty(self.time_uom, self.time, wc.uom, round=False)
+            if self.calculation == 'standard':
+                if not self.quantity:
+                    return None
+                quantity = Uom.compute_qty(self.quantity_uom, self.quantity,
+                    self.plan.uom, round=False)
+                time *= (production_quantity / quantity)
+            cost = Decimal(str(time)) * wc.cost_price
+            cost /= Decimal(str(production_quantity))
         for child in self.children:
-            cost += Decimal(str(self.children_quantity or 0)) * child.cost
+            cost += Decimal(str(self.children_quantity or 0)) * (child.cost
+                or _ZERO)
         digits = self.__class__.cost.digits[1]
         return cost.quantize(Decimal(str(10 ** -digits)))
 
