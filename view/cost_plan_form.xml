@@ -6,7 +6,7 @@
         <label name="route"/>
         <field name="route"/>
     </xpath>
-    <xpath expr="/form/notebook/page[@id='general']" position="after">
+    <xpath expr="/form/notebook/page[@id='products']" position="after">
         <page string="Operations" id="operations">
             <field name="operations_tree" colspan="4"/>
             <label name="operation_cost"/>
