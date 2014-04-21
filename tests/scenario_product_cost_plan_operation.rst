@@ -245,6 +245,9 @@ Create a cost plan for 10 units::
     >>> plan.product = product
     >>> plan.route = route
     >>> plan.quantity = 1
+    >>> plan.save()
+    >>> CostPlan.compute([plan.id], config.context)
+    >>> plan.reload()
     >>> len(plan.operations) == 2
     True
     >>> plan.save()
