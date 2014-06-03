@@ -183,8 +183,7 @@ class Plan:
     operation_cost = fields.Function(fields.Numeric('Operation Cost',
             digits=DIGITS),
         'on_change_with_operation_cost')
-    production_quantity = fields.Float('Production Quantity', required=True,
-        on_change_with=['quantity'])
+    production_quantity = fields.Float('Production Quantity', required=True)
 
     @classmethod
     def __setup__(cls):
