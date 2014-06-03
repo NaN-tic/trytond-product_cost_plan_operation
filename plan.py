@@ -1,7 +1,7 @@
 from decimal import Decimal
 from trytond.model import ModelSQL, ModelView, fields
 from trytond.pool import Pool, PoolMeta
-from trytond.pyson import Eval, Id, If, Bool
+from trytond.pyson import Eval, Id
 from trytond.transaction import Transaction
 from trytond.wizard import Wizard, StateView, StateAction, Button
 
@@ -33,11 +33,12 @@ class PlanOperationLine(ModelSQL, ModelView):
     time_uom = fields.Many2One('product.uom', 'Time UOM', required=True,
         domain=[
             ('category', '=', Id('product', 'uom_cat_time')),
-            ], on_change_with=['work_center', 'work_center_category'])
-    time_uom_digits = fields.Function(fields.Integer('Time UOM Digits',
-            on_change_with=['uom']), 'on_change_with_time_uom_digits')
+            ])
+    time_uom_digits = fields.Function(fields.Integer('Time UOM Digits'),
+        'on_change_with_time_uom_digits')
     children_quantity = fields.Float('Children Quantity')
-    quantity = fields.Float('Quantity', states={
+    quantity = fields.Float('Quantity',
+        states={
             'required': Eval('calculation') == 'standard',
             'invisible': Eval('calculation') != 'standard',
             },
@@ -45,13 +46,15 @@ class PlanOperationLine(ModelSQL, ModelView):
         depends=['quantity_uom_digits', 'calculation'],
         help='Quantity of the production product processed by the specified '
         'time.')
-    quantity_uom = fields.Many2One('product.uom', 'Quantity UOM', states={
+    quantity_uom = fields.Many2One('product.uom', 'Quantity UOM',
+        states={
             'required': Eval('calculation') == 'standard',
             'invisible': Eval('calculation') != 'standard',
-            }, domain=[
+            },
+        domain=[
             ('category', '=', Eval('quantity_uom_category')),
-            ], depends=['quantity_uom_category'],
-        on_change_with=['quantity', 'quantity_uom', '_parent_plan.uom'])
+            ],
+        depends=['quantity_uom_category'])
     calculation = fields.Selection([
             ('standard', 'Standard'),
             ('fixed', 'Fixed'),
@@ -60,25 +63,16 @@ class PlanOperationLine(ModelSQL, ModelView):
         'the indicated time in the production without considering the '
         'quantities produced. The latter is useful for a setup or cleaning '
         'operation, for example.')
-    quantity_uom_digits = fields.Function(fields.Integer('Quantity UOM Digits',
-            on_change_with=['quantity_uom']),
+    quantity_uom_digits = fields.Function(fields.Integer(
+            'Quantity UOM Digits'),
         'on_change_with_quantity_uom_digits')
     quantity_uom_category = fields.Function(fields.Many2One(
-            'product.uom.category', 'Quantity UOM Category',
-            on_change_with=['_parent_plan.uom', 'quantity']),
+            'product.uom.category', 'Quantity UOM Category'),
         'on_change_with_quantity_uom_category')
-    cost = fields.Function(fields.Numeric('Cost', digits=DIGITS,
-            on_change_with=['time', 'time_uom', 'calculation', 'quantity',
-                'quantity_uom', 'cost_price', 'work_center',
-                'work_center_category', '_parent_plan.uom', 'children',
-                'children_quantity', '_parent_plan.production_quantity']),
+    cost = fields.Function(fields.Numeric('Cost', digits=DIGITS),
         'on_change_with_cost')
     total_unit = fields.Function(fields.Numeric('Total Unit Cost',
-            digits=DIGITS, on_change_with=['time', 'time_uom', 'calculation',
-                'quantity', 'quantity_uom', 'cost_price', 'work_center',
-                'work_center_category', '_parent_plan.uom', 'children',
-                'children_quantity', '_parent_plan.quantity',
-                '_parent_plan.production_quantity']),
+            digits=DIGITS),
         'on_change_with_total_unit')
 
     @classmethod
@@ -95,23 +89,30 @@ class PlanOperationLine(ModelSQL, ModelView):
         table, _ = tables[None]
         return [table.sequence == None, table.sequence]
 
+    @fields.depends('work_center', 'work_center_category')
     def on_change_with_time_uom(self):
         if self.work_center:
             return self.work_center.uom.id
         if self.work_center_category:
             return self.work_center_category.uom.id
 
+    @fields.depends('time_uom')
     def on_change_with_time_uom_digits(self, name=None):
         if self.time_uom:
             return self.time_uom.digits
         return 2
 
+    @fields.depends('work_center', 'work_center_category', 'time')
     def on_change_with_cost_price(self, name=None):
         wc = self.work_center or self.work_center_category
         if not wc or not self.time:
             return _ZERO
         return wc.cost_price
 
+    @fields.depends('time', 'time_uom', 'calculation', 'quantity',
+        'quantity_uom', 'cost_price', 'work_center', 'work_center_category',
+        '_parent_plan.uom', 'children', 'children_quantity',
+        '_parent_plan.production_quantity')
     def on_change_with_cost(self, name=None):
         pool = Pool()
         Uom = pool.get('product.uom')
@@ -120,7 +121,8 @@ class PlanOperationLine(ModelSQL, ModelView):
             else None)
         cost = _ZERO
         if wc and self.time and production_quantity:
-            time = Uom.compute_qty(self.time_uom, self.time, wc.uom, round=False)
+            time = Uom.compute_qty(self.time_uom, self.time, wc.uom,
+                round=False)
             if self.calculation == 'standard':
                 if not self.quantity:
                     return None
@@ -135,6 +137,10 @@ class PlanOperationLine(ModelSQL, ModelView):
         digits = self.__class__.cost.digits[1]
         return cost.quantize(Decimal(str(10 ** -digits)))
 
+    @fields.depends('time', 'time_uom', 'calculation', 'quantity',
+        'quantity_uom', 'cost_price', 'work_center', 'work_center_category',
+        '_parent_plan.uom', 'children', 'children_quantity',
+        '_parent_plan.quantity', '_parent_plan.production_quantity')
     def on_change_with_total_unit(self, name=None):
         total = self.on_change_with_cost(None)
         if total and self.plan and self.plan.quantity:
@@ -144,16 +150,19 @@ class PlanOperationLine(ModelSQL, ModelView):
         digits = self.__class__.total_unit.digits[1]
         return total.quantize(Decimal(str(10 ** -digits)))
 
+    @fields.depends('quantity_uom', 'plan')
     def on_change_with_quantity_uom(self):
         if self.quantity_uom:
             return self.quantity_uom.id
         if self.plan and self.plan.uom:
             return self.plan.uom.id
 
+    @fields.depends('plan')
     def on_change_with_quantity_uom_category(self, name=None):
         if self.plan and self.plan.uom:
             return self.plan.uom.category.id
 
+    @fields.depends('quantity_uom')
     def on_change_with_quantity_uom_digits(self, name=None):
         if self.quantity_uom:
             return self.quantity_uom.digits
@@ -167,13 +176,12 @@ class Plan:
             ('uom', '=', Eval('uom'))
             ], depends=['uom'])
     operations = fields.One2Many('product.cost.plan.operation_line', 'plan',
-        'Operation Lines', on_change=['costs', 'operations'])
+        'Operation Lines')
     operations_tree = fields.Function(fields.One2Many(
-            'product.cost.plan.operation_line', 'plan', 'Operation Lines',
-            on_change=['costs', 'operations_tree', 'quantity']),
+            'product.cost.plan.operation_line', 'plan', 'Operation Lines'),
         'get_operations_tree', setter='set_operations_tree')
     operation_cost = fields.Function(fields.Numeric('Operation Cost',
-            on_change_with=['operations_tree', 'quantity'], digits=DIGITS),
+            digits=DIGITS),
         'on_change_with_operation_cost')
     production_quantity = fields.Float('Production Quantity', required=True,
         on_change_with=['quantity'])
@@ -182,8 +190,8 @@ class Plan:
     def __setup__(cls):
         super(Plan, cls).__setup__()
         cls._error_messages.update({
-                'route_already_exists': ('A route already exists for cost plan '
-                    '"%s".'),
+                'route_already_exists': ('A route already exists for cost plan'
+                    ' "%s".'),
                 'product_already_has_route': ('Product "%s" already has a '
                     'route assigned.'),
                 })
@@ -198,12 +206,12 @@ class Plan:
                 continue
             OperationLine = Pool().get('product.cost.plan.operation_line')
             to_delete.extend(plan.operations)
-            factor = 1.0
             for operation in plan.route.operations:
                 line = OperationLine()
-                for field in ('work_center', 'work_center_category', 'time_uom',
-                        'quantity_uom', 'quantity_uom_category', 'operation_type',
-                        'quantity_uom_digits', 'time', 'quantity', 'calculation'):
+                for field in ('work_center', 'work_center_category',
+                        'time_uom', 'quantity_uom', 'quantity_uom_category',
+                        'operation_type', 'quantity_uom_digits', 'time',
+                        'quantity', 'calculation'):
                     setattr(line, field, getattr(operation, field))
                 line.plan = plan
                 to_create.append(line._save_values)
@@ -223,9 +231,11 @@ class Plan:
                 'operations': value,
                 })
 
+    @fields.depends('quantity')
     def on_change_with_production_quantity(self):
         return self.quantity
 
+    @fields.depends('quantity', 'operations_tree')
     def on_change_with_operation_cost(self, name=None):
         if not self.quantity:
             return Decimal('0.0')
@@ -236,11 +246,13 @@ class Plan:
         digits = self.__class__.operation_cost.digits[1]
         return cost.quantize(Decimal(str(10 ** -digits)))
 
+    @fields.depends('operations', 'quantity')
     def on_change_operations(self):
         self.operation_cost = sum(o.cost for o in self.operations if o.cost)
         return self.update_cost_type('product_cost_plan_operation',
             'operations', self.operation_cost)
 
+    @fields.depends('operations_tree', 'operations_tree', 'quantity')
     def on_change_operations_tree(self):
         self.operation_cost = self.on_change_with_operation_cost()
         return self.update_cost_type('product_cost_plan_operation',
@@ -340,7 +352,7 @@ class CreateRoute(Wizard):
         plan = CostPlan(Transaction().context.get('active_id'))
         route = plan.create_route(self.start.name)
         data = {
-            'res_id':[route.id],
+            'res_id': [route.id],
             }
         action['views'].reverse()
         return action, data
