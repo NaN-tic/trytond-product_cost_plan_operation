@@ -178,7 +178,10 @@ class Plan:
     operations = fields.One2Many('product.cost.plan.operation_line', 'plan',
         'Operation Lines')
     operations_tree = fields.Function(fields.One2Many(
-            'product.cost.plan.operation_line', 'plan', 'Operation Lines'),
+            'product.cost.plan.operation_line', 'plan', 'Operation Lines',
+            domain=[
+                ('parent', '=', None),
+                ]),
         'get_operations_tree', setter='set_operations_tree')
     operation_cost = fields.Function(fields.Numeric('Operation Cost',
             digits=DIGITS),

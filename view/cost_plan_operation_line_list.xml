@@ -2,10 +2,9 @@
 <!-- The COPYRIGHT file at the top level of this repository contains the full
      copyright notices and license terms. -->
 <tree string="Product Cost Plan Operation" editable="bottom" sequence="sequence">
-    <field name="parent"/>
-    <field name="plan"/>
     <field name="name"/>
     <field name="operation_type"/>
+    <field name="plan"/>
     <field name="work_center"/>
     <field name="work_center_category"/>
     <field name="children_quantity"/>
@@ -16,5 +15,6 @@
     <field name="quantity_uom"/>
     <field name="cost"/>
     <field name="total_unit"/>
+    <field name="parent" tree_invisible="1"/>
     <field name="children" tree_invisible="1"/>
 </tree>
