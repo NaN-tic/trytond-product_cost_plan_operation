@@ -1,7 +1,7 @@
 from decimal import Decimal
 from trytond.model import ModelSQL, ModelView, fields
 from trytond.pool import Pool, PoolMeta
-from trytond.pyson import Eval, Id
+from trytond.pyson import Eval, Bool, Id
 from trytond.transaction import Transaction
 from trytond.wizard import Wizard, StateView, StateAction, Button
 
@@ -181,7 +181,11 @@ class Plan:
             'product.cost.plan.operation_line', 'plan', 'Operation Lines',
             domain=[
                 ('parent', '=', None),
-                ]),
+                ],
+            states={
+                'readonly': ~Bool(Eval('costs', [0])),
+                },
+            depends=['costs']),
         'get_operations_tree', setter='set_operations_tree')
     operation_cost = fields.Function(fields.Numeric('Operation Cost',
             digits=DIGITS),
