@@ -137,10 +137,7 @@ class PlanOperationLine(ModelSQL, ModelView):
         digits = self.__class__.cost.digits[1]
         return cost.quantize(Decimal(str(10 ** -digits)))
 
-    @fields.depends('time', 'time_uom', 'calculation', 'quantity',
-        'quantity_uom', 'cost_price', 'work_center', 'work_center_category',
-        '_parent_plan.uom', 'children', 'children_quantity',
-        '_parent_plan.quantity', '_parent_plan.production_quantity')
+    @fields.depends('_parent_plan.quantity', methods=['cost'])
     def on_change_with_total_unit(self, name=None):
         total = self.on_change_with_cost(None)
         if total and self.plan and self.plan.quantity:
@@ -202,6 +199,39 @@ class Plan:
                     'route assigned.'),
                 })
 
+    def get_operations_tree(self, name):
+        return [x.id for x in self.operations if not x.parent]
+
+    @classmethod
+    def set_operations_tree(cls, lines, name, value):
+        cls.write(lines, {
+                'operations': value,
+                })
+
+    @fields.depends('quantity')
+    def on_change_with_production_quantity(self):
+        return self.quantity
+
+    @fields.depends('quantity', 'operations', 'operations_tree')
+    def on_change_with_operation_cost(self, name=None):
+        if not self.quantity:
+            return Decimal('0.0')
+        cost = Decimal('0.0')
+        for operation in self.operations_tree:
+            cost += operation.cost or Decimal('0.0')
+        cost = cost / Decimal(str(self.quantity))
+        digits = self.__class__.operation_cost.digits[1]
+        return cost.quantize(Decimal(str(10 ** -digits)))
+
+    @fields.depends('operation_cost')
+    def on_change_with_costs(self):
+        res = super(Plan, self).on_change_with_costs()
+        operations_res = self._on_change_with_costs_cost_type(
+            'product_cost_plan_operation', 'operations', self.operation_cost)
+        for action, value in operations_res.iteritems():
+            res.setdefault(action, []).extend(value)
+        return res
+
     @classmethod
     @ModelView.button
     def compute(cls, plans):
@@ -227,42 +257,6 @@ class Plan:
             OperationLine.create(to_create)
         # Super must be executed at the end because it updates the costs
         super(Plan, cls).compute(plans)
-
-    def get_operations_tree(self, name):
-        return [x.id for x in self.operations if not x.parent]
-
-    @classmethod
-    def set_operations_tree(cls, lines, name, value):
-        cls.write(lines, {
-                'operations': value,
-                })
-
-    @fields.depends('quantity')
-    def on_change_with_production_quantity(self):
-        return self.quantity
-
-    @fields.depends('quantity', 'operations_tree')
-    def on_change_with_operation_cost(self, name=None):
-        if not self.quantity:
-            return Decimal('0.0')
-        cost = Decimal('0.0')
-        for operation in self.operations_tree:
-            cost += operation.cost or Decimal('0.0')
-        cost = cost / Decimal(str(self.quantity))
-        digits = self.__class__.operation_cost.digits[1]
-        return cost.quantize(Decimal(str(10 ** -digits)))
-
-    @fields.depends('operations', 'quantity')
-    def on_change_operations(self):
-        self.operation_cost = sum(o.cost for o in self.operations if o.cost)
-        return self.update_cost_type('product_cost_plan_operation',
-            'operations', self.operation_cost)
-
-    @fields.depends('operations_tree', 'operations_tree', 'quantity')
-    def on_change_operations_tree(self):
-        self.operation_cost = self.on_change_with_operation_cost()
-        return self.update_cost_type('product_cost_plan_operation',
-            'operations', self.operation_cost)
 
     @classmethod
     def get_cost_types(cls):
