@@ -85,6 +85,11 @@ class PlanOperationLine(ModelSQL, ModelView):
         return 'standard'
 
     @staticmethod
+    def default_quantity_uom_category():
+        context = Transaction().context
+        return context.get('plan_uom', None)
+
+    @staticmethod
     def order_sequence(tables):
         table, _ = tables[None]
         return [table.sequence == None, table.sequence]
@@ -102,38 +107,40 @@ class PlanOperationLine(ModelSQL, ModelView):
             return self.time_uom.digits
         return 2
 
-    @fields.depends('work_center', 'work_center_category', 'time')
-    def on_change_with_cost_price(self, name=None):
-        wc = self.work_center or self.work_center_category
-        if not wc or not self.time:
-            return _ZERO
-        return wc.cost_price
-
     @fields.depends('time', 'time_uom', 'calculation', 'quantity',
-        'quantity_uom', 'cost_price', 'work_center', 'work_center_category',
+        'quantity_uom', 'work_center', 'work_center_category',
         '_parent_plan.uom', 'children', 'children_quantity',
         '_parent_plan.production_quantity')
     def on_change_with_cost(self, name=None):
         pool = Pool()
         Uom = pool.get('product.uom')
+
         wc = self.work_center or self.work_center_category
-        production_quantity = (self.plan.production_quantity if self.plan
-            else None)
         cost = _ZERO
-        if wc and self.time and production_quantity:
+        if wc and self.time:
+            if not self.plan or not self.plan.quantity:
+                return None
+            if self.calculation == 'standard' and not self.quantity:
+                return None
+            elif (self.calculation == 'fixed' and
+                    not self.plan.production_quantity):
+                return None
+
             time = Uom.compute_qty(self.time_uom, self.time, wc.uom,
                 round=False)
             if self.calculation == 'standard':
-                if not self.quantity:
-                    return None
-                quantity = Uom.compute_qty(self.quantity_uom, self.quantity,
-                    self.plan.uom, round=False)
-                time *= (production_quantity / quantity)
-            cost = Decimal(str(time)) * wc.cost_price
-            cost /= Decimal(str(production_quantity))
-        for child in self.children:
-            cost += Decimal(str(self.children_quantity or 0)) * (child.cost
-                or _ZERO)
+                quantity = (self.plan.quantity /
+                    Uom.compute_qty(self.quantity_uom, self.quantity,
+                        self.plan.uom, round=False))
+            else:
+                quantity = self.plan.quantity / self.plan.production_quantity
+
+            cost = Decimal(str(quantity)) * Decimal(str(time)) * wc.cost_price
+
+        if self.children_quantity:
+            cost += (Decimal(str(self.children_quantity)) *
+                sum(c.on_change_with_cost() or _ZERO for c in self.children))
+
         digits = self.__class__.cost.digits[1]
         return cost.quantize(Decimal(str(10 ** -digits)))
 
@@ -147,14 +154,7 @@ class PlanOperationLine(ModelSQL, ModelView):
         digits = self.__class__.total_unit.digits[1]
         return total.quantize(Decimal(str(10 ** -digits)))
 
-    @fields.depends('quantity_uom', 'plan')
-    def on_change_with_quantity_uom(self):
-        if self.quantity_uom:
-            return self.quantity_uom.id
-        if self.plan and self.plan.uom:
-            return self.plan.uom.id
-
-    @fields.depends('plan')
+    @fields.depends('_parent_plan.uom')
     def on_change_with_quantity_uom_category(self, name=None):
         if self.plan and self.plan.uom:
             return self.plan.uom.category.id
@@ -164,6 +164,25 @@ class PlanOperationLine(ModelSQL, ModelView):
         if self.quantity_uom:
             return self.quantity_uom.digits
         return 2
+
+    @classmethod
+    def copy(cls, lines, default=None):
+        if default is None:
+            default = {}
+        else:
+            default = default.copy()
+        default['children'] = None
+
+        new_lines = []
+        for line in lines:
+            new_line, = super(PlanOperationLine, cls).copy([line],
+                default=default)
+            new_lines.append(new_line)
+
+            new_default = default.copy()
+            new_default['parent'] = new_line.id
+            cls.copy(line.children, default=new_default)
+        return new_lines
 
 
 class Plan:
@@ -180,18 +199,25 @@ class Plan:
                 ('parent', '=', None),
                 ],
             states={
-                'readonly': ~Bool(Eval('costs', [0])),
+                'readonly': ~Bool(Eval('costs', [0])) | ~Bool(Eval('uom', 0)),
                 },
-            depends=['costs']),
+            context={
+                'plan_uom': Eval('uom', None),
+                },
+            depends=['uom', 'costs']),
         'get_operations_tree', setter='set_operations_tree')
     operation_cost = fields.Function(fields.Numeric('Operation Cost',
             digits=DIGITS),
         'on_change_with_operation_cost')
-    production_quantity = fields.Float('Production Quantity', required=True)
+    production_quantity = fields.Float('Production Quantity',
+        digits=(16, Eval('uom_digits', 2)), required=True,
+        depends=['uom_digits'])
 
     @classmethod
     def __setup__(cls):
         super(Plan, cls).__setup__()
+        cls.uom.states['readonly'] = (cls.uom.states['readonly']
+            | Eval('operations_tree', [0]))
         cls._error_messages.update({
                 'route_already_exists': ('A route already exists for cost plan'
                     ' "%s".'),
@@ -218,14 +244,15 @@ class Plan:
             return Decimal('0.0')
         cost = Decimal('0.0')
         for operation in self.operations_tree:
-            cost += operation.cost or Decimal('0.0')
-        cost = cost / Decimal(str(self.quantity))
+            cost += operation.on_change_with_total_unit() or Decimal('0.0')
         digits = self.__class__.operation_cost.digits[1]
         return cost.quantize(Decimal(str(10 ** -digits)))
 
-    @fields.depends('operation_cost')
+    @fields.depends('operation_cost', 'costs', methods=['operation_cost'])
     def on_change_with_costs(self):
         res = super(Plan, self).on_change_with_costs()
+
+        self.operation_cost = self.on_change_with_operation_cost()
         operations_res = self._on_change_with_costs_cost_type(
             'product_cost_plan_operation', 'operations', self.operation_cost)
         for action, value in operations_res.iteritems():
@@ -247,7 +274,7 @@ class Plan:
                 for field in ('work_center', 'work_center_category',
                         'time_uom', 'quantity_uom', 'quantity_uom_category',
                         'operation_type', 'quantity_uom_digits', 'time',
-                        'quantity', 'calculation'):
+                        'quantity', 'calculation', 'sequence'):
                     setattr(line, field, getattr(operation, field))
                 line.plan = plan
                 to_create.append(line._save_values)
@@ -311,6 +338,7 @@ class Plan:
         'Returns the operation to create from a cost plan operation line'
         Operation = Pool().get('production.route.operation')
         operation = Operation()
+        operation.sequence = line.sequence
         operation.operation_type = line.operation_type
         operation.work_center = line.work_center
         operation.work_center_category = line.work_center_category
@@ -320,6 +348,18 @@ class Plan:
         operation.quantity = line.quantity
         operation.quantity_uom = line.quantity_uom
         return operation
+
+    def _copy_plan(self, default):
+        OperationLine = Pool().get('product.cost.plan.operation_line')
+
+        default['operations'] = None
+        default['operations_tree'] = None
+        new_plan = super(Plan, self)._copy_plan(default=default)
+        OperationLine.copy(self.operations_tree, default={
+                'plan': new_plan.id,
+                'children': None,
+                })
+        return new_plan
 
 
 class CreateRouteStart(ModelView):
