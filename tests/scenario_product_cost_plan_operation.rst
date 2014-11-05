@@ -100,8 +100,7 @@ Create a route with two operations on diferent work center::
     >>> workcenter2.save()
     >>> route = Route(name='default route')
     >>> route.uom = unit
-    >>> route_operation = RouteOperation()
-    >>> route.operations.append(route_operation)
+    >>> route_operation = route.operations.new()
     >>> route_operation.sequence = 1
     >>> route_operation.operation_type = assembly
     >>> route_operation.work_center_category = category
@@ -110,8 +109,7 @@ Create a route with two operations on diferent work center::
     >>> route_operation.time_uom = hour
     >>> route_operation.quantity = 1
     >>> route_operation.quantity_uom = unit
-    >>> route_operation = RouteOperation()
-    >>> route.operations.append(route_operation)
+    >>> route_operation = route.operations.new()
     >>> route_operation.sequence = 2
     >>> route_operation.operation_type = clean
     >>> route_operation.work_center_category = category
