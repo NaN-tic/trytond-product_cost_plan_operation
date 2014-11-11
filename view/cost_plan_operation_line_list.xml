@@ -7,7 +7,7 @@
     <field name="plan"/>
     <field name="work_center"/>
     <field name="work_center_category"/>
-    <field name="children_quantity"/>
+    <!--<field name="children_quantity"/>-->
     <field name="time"/>
     <field name="time_uom"/>
     <field name="calculation"/>
@@ -15,6 +15,6 @@
     <field name="quantity_uom"/>
     <field name="cost"/>
     <field name="total_unit"/>
-    <field name="parent" tree_invisible="1"/>
-    <field name="children" tree_invisible="1"/>
+    <!--<field name="parent" tree_invisible="1"/>
+    <field name="children" tree_invisible="1"/>-->
 </tree>
