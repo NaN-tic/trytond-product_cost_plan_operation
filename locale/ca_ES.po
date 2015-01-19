@@ -2,13 +2,25 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=utf-8\n"
 
-msgctxt "field:product.cost.plan,operation_cost:"
-msgid "Operation Cost"
-msgstr "Cost operació"
+msgctxt "error:product.cost.plan:"
+msgid "A route already exists for cost plan \"%s\"."
+msgstr "Ja existeix una ruta pel pla de costos %s\"."
+
+msgctxt "error:product.cost.plan:"
+msgid "Product \"%s\" already has a route assigned."
+msgstr "El producte \"%s\" ja té una ruta assignada."
 
 msgctxt "field:product.cost.plan,operations:"
 msgid "Operation Lines"
 msgstr "Línies d'operacions"
+
+msgctxt "field:product.cost.plan,operations_cost:"
+msgid "Operation Cost"
+msgstr "Cost operacions"
+
+msgctxt "field:product.cost.plan,production_quantity:"
+msgid "Production Quantity"
+msgstr "Quantitat de la produció"
 
 msgctxt "field:product.cost.plan,route:"
 msgid "Route"
@@ -22,21 +34,9 @@ msgctxt "field:product.cost.plan.create_route.start,name:"
 msgid "Name"
 msgstr "Nom"
 
-msgctxt "field:product.cost.plan.create_route.start,operations:"
-msgid "Operations"
-msgstr "Operacions"
-
-msgctxt "field:product.cost.plan.create_route.start,uom:"
-msgid "UOM"
-msgstr "UdM"
-
 msgctxt "field:product.cost.plan.operation_line,calculation:"
 msgid "Calculation"
 msgstr "Cálcul"
-
-msgctxt "field:product.cost.plan.operation_line,cost:"
-msgid "Cost"
-msgstr "Cost"
 
 msgctxt "field:product.cost.plan.operation_line,create_date:"
 msgid "Create Date"
@@ -49,6 +49,10 @@ msgstr "Usuari de creació"
 msgctxt "field:product.cost.plan.operation_line,id:"
 msgid "ID"
 msgstr "Identificador"
+
+msgctxt "field:product.cost.plan.operation_line,name:"
+msgid "Name"
+msgstr "Nom"
 
 msgctxt "field:product.cost.plan.operation_line,operation_type:"
 msgid "Operation Type"
@@ -65,10 +69,6 @@ msgstr "Quantitat"
 msgctxt "field:product.cost.plan.operation_line,quantity_uom:"
 msgid "Quantity UOM"
 msgstr "UdM Quantitat"
-
-msgctxt "field:product.cost.plan.operation_line,quantity_uom_category:"
-msgid "Quantity UOM Category"
-msgstr "Categoria UdM Quantitat"
 
 msgctxt "field:product.cost.plan.operation_line,quantity_uom_digits:"
 msgid "Quantity UOM Digits"
@@ -94,9 +94,13 @@ msgctxt "field:product.cost.plan.operation_line,time_uom_digits:"
 msgid "Time UOM Digits"
 msgstr "Dígits UdM Temps"
 
-msgctxt "field:product.cost.plan.operation_line,work_center:"
-msgid "Work Center"
-msgstr "Centre de treball"
+msgctxt "field:product.cost.plan.operation_line,total_cost:"
+msgid "Total Cost"
+msgstr "Cost total"
+
+msgctxt "field:product.cost.plan.operation_line,unit_cost:"
+msgid "Unit Cost"
+msgstr "Cost unitari"
 
 msgctxt "field:product.cost.plan.operation_line,work_center_category:"
 msgid "Work Center Category"
@@ -125,6 +129,14 @@ msgstr ""
 msgctxt "help:product.cost.plan.operation_line,quantity:"
 msgid "Quantity of the production product processed by the specified time."
 msgstr "Quantitat del producte processada en el temps especificat."
+
+msgctxt "help:product.cost.plan.operation_line,total_cost:"
+msgid "The cost of this operation for total plan's quantity."
+msgstr "El cost d'aquesta operació per la quantitat total del pla."
+
+msgctxt "help:product.cost.plan.operation_line,unit_cost:"
+msgid "The cost of this operation for each unit of plan's product."
+msgstr "El cost d'aquesta operació per cada unitat del producte del pla."
 
 msgctxt "model:ir.action,name:act_product_cost_plan_operation_line"
 msgid "Product Cost Plan Operation"

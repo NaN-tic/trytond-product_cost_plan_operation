@@ -5,27 +5,27 @@
     <label name="plan"/>
     <field name="plan"/>
     <newline/>
-    <label name="parent"/>
-    <field name="parent"/>
-    <newline/>
     <label name="operation_type"/>
     <field name="operation_type"/>
     <label name="sequence"/>
     <field name="sequence"/>
-    <label name="work_center"/>
-    <field name="work_center"/>
     <label name="work_center_category"/>
     <field name="work_center_category"/>
-    <label name="time"/>
-    <group id="time" col="2">
-        <field name="time"/>
-        <field name="time_uom"/>
-    </group>
     <label name="calculation"/>
     <field name="calculation"/>
+    <newline/>
+    <label name="time"/>
+    <group id="time" col="2">
+        <field name="time" widget="float_time"/>
+        <field name="time_uom"/>
+    </group>
     <label name="quantity"/>
     <group id="quantity" col="2">
         <field name="quantity"/>
         <field name="quantity_uom"/>
     </group>
+    <label name="unit_cost"/>
+    <field name="unit_cost"/>
+    <label name="total_cost"/>
+    <field name="total_cost"/>
 </form>

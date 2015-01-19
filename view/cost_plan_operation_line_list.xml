@@ -5,16 +5,12 @@
     <field name="name"/>
     <field name="operation_type"/>
     <field name="plan"/>
-    <field name="work_center"/>
     <field name="work_center_category"/>
-    <!--<field name="children_quantity"/>-->
-    <field name="time"/>
-    <field name="time_uom"/>
     <field name="calculation"/>
+    <field name="time" widget="float_time"/>
+    <field name="time_uom"/>
     <field name="quantity"/>
     <field name="quantity_uom"/>
-    <field name="cost"/>
-    <field name="total_unit"/>
-    <!--<field name="parent" tree_invisible="1"/>
-    <field name="children" tree_invisible="1"/>-->
+    <field name="unit_cost"/>
+    <field name="total_cost"/>
 </tree>

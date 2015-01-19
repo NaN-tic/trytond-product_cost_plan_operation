@@ -226,14 +226,14 @@ Create a cost plan for product::
     True
     >>> len(plan.products) == 2
     True
-    >>> product_cost, operation_cost = plan.costs
+    >>> product_cost, operations_cost = plan.costs
     >>> product_cost.cost == plan.product_cost
     True
-    >>> operation_cost.cost == plan.operation_cost
+    >>> operations_cost.cost == plan.operations_cost
     True
-    >>> plan.operation_cost == Decimal('175.0')
+    >>> plan.operations_cost == Decimal('175.0')
     True
-    >>> plan.cost_price == plan.product_cost + plan.operation_cost
+    >>> plan.cost_price == plan.product_cost + plan.operations_cost
     True
 
 Create a cost plan for 10 units::
@@ -253,7 +253,7 @@ Create a cost plan for 10 units::
     >>> plan.reload()
     >>> len(plan.products) == 2
     True
-    >>> plan.operation_cost == Decimal('175.0')
+    >>> plan.operations_cost == Decimal('175.0')
     True
-    >>> plan.cost_price == plan.product_cost + plan.operation_cost
+    >>> plan.cost_price == plan.product_cost + plan.operations_cost
     True

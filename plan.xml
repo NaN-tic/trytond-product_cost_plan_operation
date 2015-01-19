@@ -1,7 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0"?>
+<!-- The COPYRIGHT file at the top level of this repository contains the full
+     copyright notices and license terms. -->
 <tryton>
     <data>
-
+        <!-- product.cost.plan -->
         <record model="ir.ui.view" id="product_cost_plan_view_form">
             <field name="model">product.cost.plan</field>
             <field name="type">form</field>
@@ -9,6 +11,7 @@
             <field name="inherit"
                 ref="product_cost_plan.product_cost_plan_view_form"/>
         </record>
+
         <record model="ir.ui.view" id="product_cost_plan_view_list">
             <field name="model">product.cost.plan</field>
             <field name="type">tree</field>
@@ -17,20 +20,21 @@
                 ref="product_cost_plan.product_cost_plan_view_list"/>
         </record>
 
+        <!-- product.cost.plan.operation_line -->
         <record model="ir.ui.view"
                 id="product_cost_plan_operation_line_view_form">
             <field name="model">product.cost.plan.operation_line</field>
             <field name="type">form</field>
             <field name="name">cost_plan_operation_line_form</field>
         </record>
+
         <record model="ir.ui.view"
                 id="product_cost_plan_operation_line_view_list">
             <field name="model">product.cost.plan.operation_line</field>
             <field name="type">tree</field>
             <field name="name">cost_plan_operation_line_list</field>
-            <field name="field_childs"></field>
-            <!--<field name="field_childs">children</field>-->
         </record>
+
         <record model="ir.action.act_window"
                 id="act_product_cost_plan_operation_line">
             <field name="name">Product Cost Plan Operation</field>
@@ -48,6 +52,7 @@
             <field name="view" ref="product_cost_plan_operation_line_view_form"/>
             <field name="act_window" ref="act_product_cost_plan_operation_line"/>
         </record>
+
         <record model="ir.model.access"
                 id="access_product_cost_plan_operation_line">
             <field name="model"
@@ -57,6 +62,7 @@
             <field name="perm_create" eval="False"/>
             <field name="perm_delete" eval="False"/>
         </record>
+
         <record model="ir.model.access"
                 id="access_product_cost_plan_operation_line_admin">
             <field name="model"
@@ -68,9 +74,15 @@
             <field name="perm_create" eval="True"/>
             <field name="perm_delete" eval="True"/>
         </record>
+
+        <!-- product.cost.plan.cost.type -->
         <record model="product.cost.plan.cost.type" id="operations">
             <field name="name">Operations</field>
+            <field name="system" eval="True"/>
+            <field name="plan_field_name">operations_cost</field>
         </record>
+
+        <!-- product.cost.plan.create_route.start -->
         <record model="ir.ui.view" id="create_route_start_view_form">
             <field name="model">product.cost.plan.create_route.start</field>
             <field name="type">form</field>
@@ -91,6 +103,5 @@
             <field name="action" ref="wizard_create_route"/>
             <field name="group" ref="production.group_production_admin"/>
         </record>
-
     </data>
 </tryton>
