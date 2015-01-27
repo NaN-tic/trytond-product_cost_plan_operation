@@ -16,7 +16,7 @@
     <newline/>
     <label name="time"/>
     <group id="time" col="2">
-        <field name="time" widget="float_time"/>
+        <field name="time"/>
         <field name="time_uom"/>
     </group>
     <label name="quantity"/>

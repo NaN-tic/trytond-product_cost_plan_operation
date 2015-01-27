@@ -7,7 +7,7 @@
     <field name="plan"/>
     <field name="work_center_category"/>
     <field name="calculation"/>
-    <field name="time" widget="float_time"/>
+    <field name="time"/>
     <field name="time_uom"/>
     <field name="quantity"/>
     <field name="quantity_uom"/>
