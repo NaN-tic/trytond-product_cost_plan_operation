@@ -237,6 +237,9 @@ class Plan:
         pool = Pool()
         Route = pool.get('production.route')
         ProductBOM = pool.get('product.product-production.bom')
+
+        if not self.product:
+            self.raise_user_error('lacks_the_product', self.rec_name)
         if self.route:
             self.raise_user_error('route_already_exists', self.rec_name)
 
@@ -314,7 +317,7 @@ class CreateRoute(Wizard):
         CostPlan = Pool().get('product.cost.plan')
         plan = CostPlan(Transaction().context.get('active_id'))
         return {
-            'name': plan.product.rec_name,
+            'name': plan.rec_name,
             }
 
     def do_route(self, action):
