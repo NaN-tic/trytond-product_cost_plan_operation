@@ -241,7 +241,8 @@ class Plan:
         if not self.product:
             self.raise_user_error('lacks_the_product', self.rec_name)
         if self.route:
-            self.raise_user_error('route_already_exists', self.rec_name)
+            self.raise_user_warning('route_already_exists%s' % self.id,
+                'route_already_exists', self.rec_name)
 
         route = Route()
         route.name = name
@@ -251,8 +252,8 @@ class Plan:
         self.route = route
         self.save()
 
-        ProductBOM()
         if self.product.boms:
+            # TODO: create new bom to allow diferent "versions"?
             product_bom = self.product.boms[0]
             if product_bom.route:
                 self.raise_user_error('product_already_has_route',
@@ -283,6 +284,15 @@ class Plan:
         operation.quantity = line.quantity
         operation.quantity_uom = line.quantity_uom
         return operation
+
+    @classmethod
+    def copy(cls, plans, default=None):
+        if default is None:
+            default = {}
+        else:
+            default = default.copy()
+        default['route'] = None
+        return super(Plan, cls).copy(plans, default=default)
 
     def _copy_plan(self, default):
         OperationLine = Pool().get('product.cost.plan.operation_line')
