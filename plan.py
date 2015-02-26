@@ -277,6 +277,7 @@ class Plan:
         operation = Operation()
         operation.sequence = line.sequence
         operation.operation_type = line.operation_type
+        operation.notes = line.name
         operation.work_center_category = line.work_center_category
         operation.time = line.time
         operation.time_uom = line.time_uom
