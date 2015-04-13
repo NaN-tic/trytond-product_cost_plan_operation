@@ -139,12 +139,12 @@ class PlanOperationLine(ModelSQL, ModelView):
             return total_cost
 
         if not self.plan or not self.plan.quantity:
-            return
+            return Decimal('0')
         if self.calculation == 'standard' and not self.quantity:
-            return
+            return Decimal('0')
         elif (self.calculation == 'fixed' and
                 not self.plan.production_quantity):
-            return
+            return Decimal('0')
 
         time = Uom.compute_qty(self.time_uom, self.time,
             self.work_center_category.uom, round=False)
