@@ -224,6 +224,8 @@ class Plan:
     def compute(cls, plans):
         OperationLine = Pool().get('product.cost.plan.operation_line')
 
+        super(Plan, cls).compute(plans)
+
         to_create = []
         for plan in plans:
             if not plan.route:
@@ -239,8 +241,6 @@ class Plan:
                 to_create.append(line._save_values)
         if to_create:
             OperationLine.create(to_create)
-        # Super must be executed at the end because it updates the costs
-        super(Plan, cls).compute(plans)
 
     def create_route(self, name):
         pool = Pool()
