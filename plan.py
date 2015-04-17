@@ -6,7 +6,7 @@ import math
 from trytond.config import config
 from trytond.model import ModelSQL, ModelView, fields
 from trytond.pool import Pool, PoolMeta
-from trytond.pyson import Eval, Bool, Id
+from trytond.pyson import Eval, Id
 from trytond.transaction import Transaction
 from trytond.wizard import Wizard, StateView, StateAction, Button
 
@@ -208,15 +208,26 @@ class Plan:
         return cost.quantize(Decimal(str(10 ** -digits)))
 
     @classmethod
+    def clean(cls, plans):
+        pool = Pool()
+        OperationLine = pool.get('product.cost.plan.operation_line')
+
+        super(Plan, cls).clean(plans)
+
+        operation_lines = OperationLine.search([
+                ('plan', 'in', [p.id for p in plans]),
+                ])
+        if operation_lines:
+            OperationLine.delete(operation_lines)
+
+    @classmethod
     def compute(cls, plans):
         OperationLine = Pool().get('product.cost.plan.operation_line')
 
         to_create = []
-        to_delete = []
         for plan in plans:
             if not plan.route:
                 continue
-            to_delete.extend(plan.operations)
             for operation in plan.route.operations:
                 line = OperationLine()
                 for field in ('sequence', 'operation_type',
@@ -226,8 +237,6 @@ class Plan:
                     setattr(line, field, getattr(operation, field))
                 line.plan = plan
                 to_create.append(line._save_values)
-        if to_delete:
-            OperationLine.delete(to_delete)
         if to_create:
             OperationLine.create(to_create)
         # Super must be executed at the end because it updates the costs
