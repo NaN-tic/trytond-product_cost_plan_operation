@@ -220,20 +220,19 @@ Create a cost plan for product::
     >>> plan.route = route
     >>> plan.quantity = 1
     >>> plan.save()
-    >>> CostPlan.compute([plan.id], config.context)
-    >>> plan.reload()
+    >>> plan.click('compute')
     >>> len(plan.operations) == 2
     True
     >>> len(plan.products) == 2
     True
     >>> product_cost, operations_cost = plan.costs
-    >>> product_cost.cost == plan.product_cost
+    >>> product_cost.cost == plan.products_cost
     True
     >>> operations_cost.cost == plan.operations_cost
     True
-    >>> plan.operations_cost == Decimal('175.0')
-    True
-    >>> plan.cost_price == plan.product_cost + plan.operations_cost
+    >>> plan.operations_cost
+    Decimal('150.0000')
+    >>> plan.cost_price == plan.products_cost + plan.operations_cost
     True
 
 Create a cost plan for 10 units::
@@ -242,18 +241,13 @@ Create a cost plan for 10 units::
     >>> plan = CostPlan()
     >>> plan.product = product
     >>> plan.route = route
-    >>> plan.quantity = 1
-    >>> plan.save()
-    >>> CostPlan.compute([plan.id], config.context)
-    >>> plan.reload()
+    >>> plan.quantity = 10
+    >>> plan.click('compute')
     >>> len(plan.operations) == 2
     True
-    >>> plan.save()
-    >>> CostPlan.compute([plan.id], config.context)
-    >>> plan.reload()
     >>> len(plan.products) == 2
     True
-    >>> plan.operations_cost == Decimal('175.0')
-    True
-    >>> plan.cost_price == plan.product_cost + plan.operations_cost
+    >>> plan.operations_cost
+    Decimal('150.0000')
+    >>> plan.cost_price == plan.products_cost + plan.operations_cost
     True
