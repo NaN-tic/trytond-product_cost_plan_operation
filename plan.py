@@ -14,7 +14,7 @@ __all__ = ['PlanOperationLine', 'Plan',
     'CreateRouteStart', 'CreateRoute']
 __metaclass__ = PoolMeta
 
-DIGITS = int(config.get('digits', 'unit_price_digits', 4))
+DIGITS = (16, config.getint('product', 'price_decimal', default=4))
 _ZERO = Decimal('0.0')
 
 
@@ -67,12 +67,12 @@ class PlanOperationLine(ModelSQL, ModelView):
         help='Quantity of the production product processed by the specified '
         'time.')
     unit_cost = fields.Function(fields.Numeric('Unit Cost',
-            digits=(16, DIGITS),
+            digits=DIGITS,
             help="The cost of this operation for each unit of plan's "
             "product."),
         'get_unit_cost')
     total_cost = fields.Function(fields.Numeric('Total Cost',
-            digits=(16, DIGITS),
+            digits=DIGITS,
             help="The cost of this operation for total plan's quantity."),
         'get_total_cost')
 
@@ -179,7 +179,7 @@ class Plan:
         digits=(16, Eval('uom_digits', 2)), required=True,
         depends=['uom_digits'])
     operations_cost = fields.Function(fields.Numeric('Operation Cost',
-            digits=(16, DIGITS)),
+            digits=DIGITS),
         'get_operations_cost')
 
     @classmethod
