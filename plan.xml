@@ -6,18 +6,18 @@
         <!-- product.cost.plan -->
         <record model="ir.ui.view" id="product_cost_plan_view_form">
             <field name="model">product.cost.plan</field>
-            <field name="type">form</field>
-            <field name="name">cost_plan_form</field>
+            <field name="type" eval="None"/>
             <field name="inherit"
                 ref="product_cost_plan.product_cost_plan_view_form"/>
+            <field name="name">cost_plan_form</field>
         </record>
 
         <record model="ir.ui.view" id="product_cost_plan_view_list">
             <field name="model">product.cost.plan</field>
-            <field name="type">tree</field>
-            <field name="name">cost_plan_list</field>
+            <field name="type" eval="None"/>
             <field name="inherit"
                 ref="product_cost_plan.product_cost_plan_view_list"/>
+            <field name="name">cost_plan_list</field>
         </record>
 
         <!-- product.cost.plan.operation_line -->
