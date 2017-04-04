@@ -242,7 +242,7 @@ class Plan:
         if to_create:
             OperationLine.create(to_create)
 
-    def create_route(self, name):
+    def create_route(self, name, bom=None):
         pool = Pool()
         Route = pool.get('production.route')
         ProductBOM = pool.get('product.product-production.bom')
@@ -260,13 +260,9 @@ class Plan:
         route.save()
         self.route = route
         self.save()
-
-        if self.product.boms:
-            # TODO: create new bom to allow diferent "versions"?
-            product_bom = self.product.boms[0]
-            if product_bom.route:
-                self.raise_user_error('product_already_has_route',
-                    self.product.rec_name)
+        if bom:
+            boms = [b for b in self.product.boms]
+            product_bom = filter(lambda b: bom == b.bom, boms)[0]
         else:
             product_bom = ProductBOM()
         product_bom.product = self.product

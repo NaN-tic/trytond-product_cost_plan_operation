@@ -1,3 +1,6 @@
+Version 3.4.2 - 2017-04-03
+* Removed TODO: When giving a product-bom as a parameter to the create_route method, it will use that product-bom
+  instead of creating a new one
 Version 3.4.1 - 2015-01-19
 * Some fixes and improvements
 
