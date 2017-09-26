@@ -178,7 +178,7 @@ class Plan:
     production_quantity = fields.Float('Production Quantity',
         digits=(16, Eval('uom_digits', 2)), required=True,
         depends=['uom_digits'])
-    operations_cost = fields.Function(fields.Numeric('Operation Cost',
+    operations_cost = fields.Function(fields.Numeric('Unit Operation Costs',
             digits=DIGITS),
         'get_operations_cost')
 
