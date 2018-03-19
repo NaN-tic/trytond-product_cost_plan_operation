@@ -235,7 +235,8 @@ class Plan:
                 for field in ('sequence', 'operation_type',
                         'work_center_category', 'calculation',
                         'time_uom', 'time',
-                        'quantity_uom', 'quantity_uom_digits', 'quantity'):
+                        'quantity_uom', 'quantity_uom_digits',
+                        'quantity', 'unit_cost'):
                     setattr(line, field, getattr(operation, field))
                 line.plan = plan
                 to_create.append(line._save_values)
@@ -291,6 +292,7 @@ class Plan:
         operation.time = line.time
         operation.time_uom = line.time_uom
         operation.calculation = line.calculation
+        operation.unit_cost = line.unit_cost
         operation.quantity = line.quantity
         operation.quantity_uom = line.quantity_uom
         return operation
