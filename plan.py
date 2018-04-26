@@ -12,7 +12,7 @@ from trytond.wizard import Wizard, StateView, StateAction, Button
 
 __all__ = ['PlanOperationLine', 'Plan',
     'CreateRouteStart', 'CreateRoute']
-__metaclass__ = PoolMeta
+
 
 DIGITS = (16, config.getint('product', 'price_decimal', default=4))
 _ZERO = Decimal('0.0')
@@ -112,7 +112,7 @@ class PlanOperationLine(ModelSQL, ModelView):
         context = Transaction().context
         return context.get('plan_uom', None)
 
-    @fields.depends('_parent_plan', '_parent_plan.uom')
+    @fields.depends('plan', 'plan.uom')
     def on_change_with_quantity_uom(self):
         if self.plan and self.plan.uom:
             return self.plan.uom.category.id
@@ -167,6 +167,7 @@ class PlanOperationLine(ModelSQL, ModelView):
 
 class Plan:
     __name__ = 'product.cost.plan'
+    __metaclass__ = PoolMeta
 
     route = fields.Many2One('production.route', 'Route', domain=[
             ('uom', '=', Eval('uom'))

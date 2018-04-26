@@ -14,19 +14,12 @@ Imports::
     >>> from proteus import config, Model, Wizard
     >>> from trytond.modules.company.tests.tools import create_company, \
     ...     get_company
+    >>> from trytond.tests.tools import activate_modules
     >>> today = datetime.date.today()
-
-Create database::
-
-    >>> config = config.set_trytond()
-    >>> config.pool.test = True
 
 Install production Module::
 
-    >>> Module = Model.get('ir.module')
-    >>> modules = Module.find([('name', '=', 'product_cost_plan_operation')])
-    >>> Module.install([x.id for x in modules], config.context)
-    >>> Wizard('ir.module.install_upgrade').execute('upgrade')
+  >>> config = activate_modules('product_cost_plan_operation')
 
 Create company::
 
@@ -107,12 +100,13 @@ Create product::
     >>> product = Product()
     >>> template = ProductTemplate()
     >>> template.name = 'product'
+    >>> template.producible = True
     >>> template.default_uom = unit
     >>> template.type = 'goods'
     >>> template.list_price = Decimal(30)
-    >>> template.cost_price = Decimal(20)
     >>> template.save()
     >>> product.template = template
+    >>> product.cost_price = Decimal(20)
     >>> product.save()
 
 Create Components::
@@ -123,9 +117,9 @@ Create Components::
     >>> template1.default_uom = unit
     >>> template1.type = 'goods'
     >>> template1.list_price = Decimal(5)
-    >>> template1.cost_price = Decimal(1)
     >>> template1.save()
     >>> component1.template = template1
+    >>> component1.cost_price = Decimal(1)
     >>> component1.save()
 
     >>> meter, = ProductUom.find([('name', '=', 'Meter')])
@@ -136,9 +130,9 @@ Create Components::
     >>> template2.default_uom = meter
     >>> template2.type = 'goods'
     >>> template2.list_price = Decimal(7)
-    >>> template2.cost_price = Decimal(5)
     >>> template2.save()
     >>> component2.template = template2
+    >>> component2.cost_price = Decimal(5)
     >>> component2.save()
 
 Create Bill of Material::
@@ -148,16 +142,16 @@ Create Bill of Material::
     >>> BOMOutput = Model.get('production.bom.output')
     >>> bom = BOM(name='product')
     >>> input1 = BOMInput()
-    >>> bom.inputs.append(input1)
+    >>> input1 = bom.inputs.new()
     >>> input1.product = component1
     >>> input1.quantity = 5
     >>> input2 = BOMInput()
-    >>> bom.inputs.append(input2)
+    >>> input2 = bom.inputs.new()
     >>> input2.product = component2
     >>> input2.quantity = 150
     >>> input2.uom = centimeter
     >>> output = BOMOutput()
-    >>> bom.outputs.append(output)
+    >>> output = bom.outputs.new()
     >>> output.product = product
     >>> output.quantity = 1
     >>> bom.save()
