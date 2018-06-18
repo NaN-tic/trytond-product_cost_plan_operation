@@ -262,11 +262,7 @@ class Plan:
         self.save()
 
         if self.product.boms:
-            # TODO: create new bom to allow diferent "versions"?
             product_bom = self.product.boms[0]
-            if product_bom.route:
-                self.raise_user_error('product_already_has_route',
-                    self.product.rec_name)
         else:
             product_bom = ProductBOM()
         product_bom.product = self.product
