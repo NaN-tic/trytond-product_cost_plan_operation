@@ -165,9 +165,8 @@ class PlanOperationLine(ModelSQL, ModelView):
         return total_cost.quantize(Decimal(str(10 ** -digits)))
 
 
-class Plan:
+class Plan(metaclass=PoolMeta):
     __name__ = 'product.cost.plan'
-    __metaclass__ = PoolMeta
 
     route = fields.Many2One('production.route', 'Route', domain=[
             ('uom', '=', Eval('uom'))
