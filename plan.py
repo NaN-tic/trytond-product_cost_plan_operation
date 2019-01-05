@@ -9,6 +9,8 @@ from trytond.pool import Pool, PoolMeta
 from trytond.pyson import Eval, Id
 from trytond.transaction import Transaction
 from trytond.wizard import Wizard, StateView, StateAction, Button
+from trytond.exceptions import UserWarning, UserError
+from trytond.i18n import gettext
 
 __all__ = ['PlanOperationLine', 'Plan',
     'CreateRouteStart', 'CreateRoute']
@@ -187,12 +189,6 @@ class Plan(metaclass=PoolMeta):
         super(Plan, cls).__setup__()
         cls.uom.states['readonly'] = (cls.uom.states['readonly']
             | Eval('operations', [0]))
-        cls._error_messages.update({
-                'route_already_exists': ('A route already exists for cost plan'
-                    ' "%s".'),
-                'product_already_has_route': ('Product "%s" already has a '
-                    'route assigned.'),
-                })
 
     @fields.depends('quantity')
     def on_change_with_production_quantity(self):
@@ -248,10 +244,12 @@ class Plan(metaclass=PoolMeta):
         ProductBOM = pool.get('product.product-production.bom')
 
         if not self.product:
-            self.raise_user_error('lacks_the_product', self.rec_name)
+            raise UserError(gettext('product_cost_plan_margin.lacks_the_product',
+                cost_plan=self.rec_name))
         if self.route:
-            self.raise_user_warning('route_already_exists%s' % self.id,
-                'route_already_exists', self.rec_name)
+            raise UserWarning('route_already_exists%s'%self.id,
+                gettext('product_cost_plan_margin.route_already_exists',
+                    product=self.rec_name))
 
         route = Route()
         route.name = name

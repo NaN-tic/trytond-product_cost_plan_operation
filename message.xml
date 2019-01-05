@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!-- This file is part of Tryton.  The COPYRIGHT file at the top level of
+this repository contains the full copyright notices and license terms. -->
+<tryton>
+    <data group="1">
+        <record model="ir.message" id="route_already_exists">
+            <field name="text">A route already exists for cost plan "%(cost_plan)s".</field>
+        </record>
+        <record model="ir.message" id="product_already_has_route">
+            <field name="text">Product "%(product)s" already has a route assigned.</field>
+        </record>
+      </data>
+</tryton>
