@@ -1,22 +1,14 @@
-# 
+#
 msgid ""
 msgstr "Content-Type: text/plain; charset=utf-8\n"
-
-msgctxt "error:product.cost.plan:"
-msgid "A route already exists for cost plan \"%s\"."
-msgstr "Ja existeix una ruta pel pla de costos %s\"."
-
-msgctxt "error:product.cost.plan:"
-msgid "Product \"%s\" already has a route assigned."
-msgstr "El producte \"%s\" ja té una ruta assignada."
 
 msgctxt "field:product.cost.plan,operations:"
 msgid "Operation Lines"
 msgstr "Línies d'operacions"
 
 msgctxt "field:product.cost.plan,operations_cost:"
-msgid "Operation Cost"
-msgstr "Cost operacions"
+msgid "Unit Operation Costs"
+msgstr "Cost unitari d'operacions"
 
 msgctxt "field:product.cost.plan,production_quantity:"
 msgid "Production Quantity"
@@ -28,7 +20,7 @@ msgstr "Ruta"
 
 msgctxt "field:product.cost.plan.create_route.start,id:"
 msgid "ID"
-msgstr "Identificador"
+msgstr "ID"
 
 msgctxt "field:product.cost.plan.create_route.start,name:"
 msgid "Name"
@@ -48,7 +40,7 @@ msgstr "Usuari de creació"
 
 msgctxt "field:product.cost.plan.operation_line,id:"
 msgid "ID"
-msgstr "Identificador"
+msgstr "ID"
 
 msgctxt "field:product.cost.plan.operation_line,name:"
 msgid "Name"
@@ -75,7 +67,7 @@ msgid "Quantity UOM Digits"
 msgstr "Digits UdM Quantitat"
 
 msgctxt "field:product.cost.plan.operation_line,rec_name:"
-msgid "Name"
+msgid "Record Name"
 msgstr "Nom"
 
 msgctxt "field:product.cost.plan.operation_line,sequence:"
@@ -108,11 +100,11 @@ msgstr "Categoria del centre de treball"
 
 msgctxt "field:product.cost.plan.operation_line,write_date:"
 msgid "Write Date"
-msgstr "Data modificació"
+msgstr "Data de modificació"
 
 msgctxt "field:product.cost.plan.operation_line,write_uid:"
 msgid "Write User"
-msgstr "Usuari modificació"
+msgstr "Usuari de modificació"
 
 msgctxt "help:product.cost.plan.operation_line,calculation:"
 msgid ""
@@ -145,6 +137,14 @@ msgstr "Operació del Pla de costos del producte"
 msgctxt "model:ir.action,name:wizard_create_route"
 msgid "Create Route"
 msgstr "Crear ruta"
+
+msgctxt "model:ir.message,text:product_already_has_route"
+msgid "Product \"%(product)s\" already has a route assigned."
+msgstr "El producte \"%(product)s\" ja té una llista de materials assignada."
+
+msgctxt "model:ir.message,text:route_already_exists"
+msgid "A route already exists for cost plan \"%(cost_plan)s\"."
+msgstr "Ja existeix una ruta per el pla de costos \"%(cost_plan)s\"."
 
 msgctxt "model:product.cost.plan.cost.type,name:operations"
 msgid "Operations"
