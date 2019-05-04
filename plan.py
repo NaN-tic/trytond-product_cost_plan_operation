@@ -242,12 +242,13 @@ class Plan(metaclass=PoolMeta):
         pool = Pool()
         Route = pool.get('production.route')
         ProductBOM = pool.get('product.product-production.bom')
-
+        Warning = pool.get('res.user.warning')
+        key = 'route_already_exists%s'%self.id
         if not self.product:
             raise UserError(gettext('product_cost_plan_margin.lacks_the_product',
                 cost_plan=self.rec_name))
-        if self.route:
-            raise UserWarning('route_already_exists%s'%self.id,
+        if self.route and Warning.check(key):
+            raise UserWarning(key,
                 gettext('product_cost_plan_margin.route_already_exists',
                     product=self.rec_name))
 
