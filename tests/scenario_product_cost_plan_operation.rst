@@ -105,7 +105,7 @@ Create product::
     >>> template.type = 'goods'
     >>> template.list_price = Decimal(30)
     >>> template.save()
-    >>> product.template = template
+    >>> product, = template.products
     >>> product.cost_price = Decimal(20)
     >>> product.save()
 
@@ -118,7 +118,7 @@ Create Components::
     >>> template1.type = 'goods'
     >>> template1.list_price = Decimal(5)
     >>> template1.save()
-    >>> component1.template = template1
+    >>> component1, = template1.products
     >>> component1.cost_price = Decimal(1)
     >>> component1.save()
 
@@ -131,7 +131,7 @@ Create Components::
     >>> template2.type = 'goods'
     >>> template2.list_price = Decimal(7)
     >>> template2.save()
-    >>> component2.template = template2
+    >>> component2, = template2.products
     >>> component2.cost_price = Decimal(5)
     >>> component2.save()
 
