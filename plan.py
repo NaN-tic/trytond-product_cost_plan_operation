@@ -114,7 +114,7 @@ class PlanOperationLine(ModelSQL, ModelView):
         context = Transaction().context
         return context.get('plan_uom', None)
 
-    @fields.depends('plan', 'plan.uom')
+    @fields.depends('plan', '_parent_plan.uom')
     def on_change_with_quantity_uom(self):
         if self.plan and self.plan.uom:
             return self.plan.uom.category.id
