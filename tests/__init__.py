@@ -2,4 +2,4 @@
 # copyright notices and license terms.
 from .test_product_cost_plan_operation import suite
 
-__all__ = 'suite'
+__all__ = ['suite']
