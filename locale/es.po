@@ -4,7 +4,7 @@ msgstr "Content-Type: text/plain; charset=utf-8\n"
 
 msgctxt "field:product.cost.plan,operations:"
 msgid "Operation Lines"
-msgstr "Lineas operaciones"
+msgstr "Líneas operaciones"
 
 msgctxt "field:product.cost.plan,operations_cost:"
 msgid "Unit Operation Costs"
