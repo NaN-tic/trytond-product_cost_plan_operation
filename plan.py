@@ -55,7 +55,7 @@ class PlanOperationLine(ModelSQL, ModelView):
         states={
             'required': Eval('calculation') == 'standard',
             'invisible': Eval('calculation') != 'standard',
-            }, depends=['calculation'])
+            }, depends=['calculation', 'plan'])
     quantity_uom_digits = fields.Function(fields.Integer(
             'Quantity UOM Digits'),
         'on_change_with_quantity_uom_digits')
