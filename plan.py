@@ -47,7 +47,7 @@ class PlanOperationLine(ModelSQL, ModelView):
     time_uom_digits = fields.Function(fields.Integer('Time UOM Digits'),
         'on_change_with_time_uom_digits')
     time = fields.Float('Time', required=True,
-        digits=(16, Eval('time_uom_digits', 2)), depends=['time_uom_digits'])
+        digits=(16, Eval('time_uom_digits', 2)))
     quantity_uom = fields.Many2One('product.uom', 'Quantity UOM', domain=[
             ('category', '=',
                 Eval('_parent_plan', {}).get('product_uom_category', -1)),
@@ -55,7 +55,7 @@ class PlanOperationLine(ModelSQL, ModelView):
         states={
             'required': Eval('calculation') == 'standard',
             'invisible': Eval('calculation') != 'standard',
-            }, depends=['calculation', 'plan'])
+            })
     quantity_uom_digits = fields.Function(fields.Integer(
             'Quantity UOM Digits'),
         'on_change_with_quantity_uom_digits')
@@ -172,7 +172,7 @@ class Plan(metaclass=PoolMeta):
 
     route = fields.Many2One('production.route', 'Route', domain=[
             ('uom', '=', Eval('uom'))
-            ], depends=['uom'])
+            ])
     operations = fields.One2Many('product.cost.plan.operation_line', 'plan',
         'Operation Lines', context={
             'plan_uom': Eval('uom'),
