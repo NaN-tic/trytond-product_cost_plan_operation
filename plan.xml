@@ -53,8 +53,7 @@
 
         <record model="ir.model.access"
                 id="access_product_cost_plan_operation_line">
-            <field name="model"
-                search="[('model', '=', 'product.cost.plan.operation_line')]"/>
+            <field name="model">product.cost.plan.operation_line</field>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="False"/>
             <field name="perm_create" eval="False"/>
@@ -63,8 +62,7 @@
 
         <record model="ir.model.access"
                 id="access_product_cost_plan_operation_line_admin">
-            <field name="model"
-                search="[('model', '=', 'product.cost.plan.operation_line')]"/>
+            <field name="model">product.cost.plan.operation_line</field>
             <field name="group"
                 ref="product_cost_plan.group_product_cost_plan_admin"/>
             <field name="perm_read" eval="True"/>
