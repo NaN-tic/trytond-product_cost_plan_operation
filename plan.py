@@ -17,7 +17,7 @@ __all__ = ['PlanOperationLine', 'Plan',
 
 
 DIGITS = (16, config.getint('product', 'price_decimal', default=4))
-_ZERO = Decimal('0.0')
+_ZERO = Decimal(0)
 
 
 class PlanOperationLine(ModelSQL, ModelView):
@@ -196,7 +196,7 @@ class Plan(metaclass=PoolMeta):
 
     def get_operations_cost(self, name):
         if not self.quantity:
-            return Decimal('0.0')
+            return Decimal(0)
         cost = sum(o.get_total_cost(None, round=False)
             for o in self.operations)
         cost /= Decimal(str(self.quantity))
