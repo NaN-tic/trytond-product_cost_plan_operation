@@ -234,7 +234,7 @@ class Plan(metaclass=PoolMeta):
                         'quantity_uom', 'quantity_uom_digits', 'quantity'):
                     setattr(line, field, getattr(operation, field))
                 line.plan = plan
-                to_create.append(line._save_values)
+                to_create.append(line._save_values())
         if to_create:
             OperationLine.create(to_create)
 
