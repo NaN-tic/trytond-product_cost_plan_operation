@@ -184,7 +184,7 @@ msgstr "Operaciones"
 
 msgctxt "wizard_button:product.cost.plan.create_route,start,end:"
 msgid "Cancel"
-msgstr "Cancel·la"
+msgstr "Cancelar"
 
 msgctxt "wizard_button:product.cost.plan.create_route,start,route:"
 msgid "Ok"
