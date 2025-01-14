@@ -116,7 +116,7 @@ msgstr ""
 "Utilice Estàndar para multiplicar la cantidad de tiempo por el número de "
 "unidades producidas. Utilice Fijo para indicar el tiempo de la producción "
 "sin considerar las cantidades producidas. El segundo puede ser útil para "
-"operaciones de instal·lación o limpieza, por ejemplo. "
+"operaciones de instalación o limpieza, por ejemplo. "
 
 msgctxt "help:product.cost.plan.operation_line,quantity:"
 msgid "Quantity of the production product processed by the specified time."
