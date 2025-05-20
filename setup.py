@@ -9,11 +9,7 @@ from configparser import ConfigParser
 
 MODULE = 'product_cost_plan_operation'
 PREFIX = 'nantic'
-MODULE2PREFIX = {
-    'product_cost_plan': 'nantic',
-    'production_operation': 'nantic',
-    'production_route': 'nantic',
-    }
+MODULE2PREFIX = {}
 
 
 def read(fname):
@@ -60,26 +56,7 @@ if minor_version % 2:
 else:
     branch = series
 
-dependency_links = [
-    ('hg+https://bitbucket.org/nantic/'
-        'trytond-product_cost_plan@%(branch)s'
-        '#egg=nantic-product_cost_plan-%(series)s' % {
-            'branch': branch,
-            'series': series,
-            }),
-    ('hg+https://bitbucket.org/nantic/'
-        'trytond-production_operation@%(branch)s'
-        '#egg=nantic-production_operation-%(series)s' % {
-            'branch': branch,
-            'series': series,
-            }),
-    ('hg+https://bitbucket.org/nantic/'
-        'trytond-production_route@%(branch)s'
-        '#egg=nantic-production_route-%(series)s' % {
-            'branch': branch,
-            'series': series,
-            }),
-    ]
+dependency_links = []
 
 if minor_version % 2:
     # Add development index for testing with proteus
