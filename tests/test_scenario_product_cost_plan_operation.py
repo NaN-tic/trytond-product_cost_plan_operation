@@ -34,7 +34,8 @@ class Test(unittest.TestCase):
 
         # Create a route with two operations on diferent work center
         ProductUom = Model.get('product.uom')
-        Route = Model.get('production.route')
+        Routing = Model.get('production.routing')
+        RoutingOperation = Model.get('production.routing.operation')
         OperationType = Model.get('production.operation.type')
         assembly = OperationType(name='Assembly')
         assembly.save()
@@ -63,29 +64,32 @@ class Test(unittest.TestCase):
         workcenter2.uom = hour
         workcenter2.cost_price = Decimal('50.0')
         workcenter2.save()
-        route = Route(name='default route')
-        route.uom = unit
-        route_operation = route.operations.new()
-        route_operation.sequence = 1
-        route_operation.operation_type = assembly
-        route_operation.work_center_category = category
-        route_operation.work_center = workcenter1
-        route_operation.time = 5
-        route_operation.time_uom = hour
-        route_operation.quantity = 1
-        route_operation.quantity_uom = unit
-        route_operation = route.operations.new()
-        route_operation.sequence = 2
-        route_operation.operation_type = clean
-        route_operation.work_center_category = category
-        route_operation.work_center = workcenter2
-        route_operation.time = 1
-        route_operation.time_uom = hour
-        route_operation.quantity = 1
-        route_operation.quantity_uom = unit
-        route.save()
-        route.reload()
-        self.assertEqual(len(route.operations), 2)
+        routing = Routing(name='default routing')
+        assembly_operation = RoutingOperation(name='Assembly')
+        assembly_operation.save()
+        clean_operation = RoutingOperation(name='Clean')
+        clean_operation.save()
+        routing_step = routing.steps.new()
+        routing_step.sequence = 1
+        routing_step.operation = assembly_operation
+        routing_step.operation_type = assembly
+        routing_step.work_center_category = category
+        routing_step.time = 5
+        routing_step.time_uom = hour
+        routing_step.quantity = 1
+        routing_step.quantity_uom = unit
+        routing_step = routing.steps.new()
+        routing_step.sequence = 2
+        routing_step.operation = clean_operation
+        routing_step.operation_type = clean
+        routing_step.work_center_category = category
+        routing_step.time = 1
+        routing_step.time_uom = hour
+        routing_step.quantity = 1
+        routing_step.quantity_uom = unit
+        routing.save()
+        routing.reload()
+        self.assertEqual(len(routing.steps), 2)
 
         # Create product
         ProductTemplate = Model.get('product.template')
@@ -149,6 +153,9 @@ class Test(unittest.TestCase):
         product.boms.append(ProductBom(bom=bom))
         product.save()
 
+        routing.boms.append(bom)
+        routing.save()
+
         # Create an Inventory
         Inventory = Model.get('stock.inventory')
         InventoryLine = Model.get('stock.inventory.line')
@@ -173,7 +180,7 @@ class Test(unittest.TestCase):
         CostPlan = Model.get('product.cost.plan')
         plan = CostPlan()
         plan.product = product
-        plan.route = route
+        plan.route = routing
         plan.quantity = 1
         plan.save()
         plan.click('compute')
@@ -190,7 +197,7 @@ class Test(unittest.TestCase):
         CostPlan = Model.get('product.cost.plan')
         plan = CostPlan()
         plan.product = product
-        plan.route = route
+        plan.route = routing
         plan.quantity = 10
         plan.click('compute')
         self.assertEqual(len(plan.operations), 2)
