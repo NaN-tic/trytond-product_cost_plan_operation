@@ -3,7 +3,7 @@
 from decimal import Decimal
 import math
 
-from trytond.config import config
+import trytond.config as config
 from trytond.model import ModelSQL, ModelView, fields
 from trytond.pool import Pool, PoolMeta
 from trytond.pyson import Eval, Id
