@@ -187,8 +187,7 @@ class Plan(metaclass=PoolMeta):
     @classmethod
     def __setup__(cls):
         super(Plan, cls).__setup__()
-        cls.uom.states['readonly'] = (cls.uom.states['readonly']
-            | Eval('operations', [0]))
+        cls.uom.states['editable'] &= ~Eval('operations', [0])
 
     @fields.depends('quantity')
     def on_change_with_production_quantity(self):
