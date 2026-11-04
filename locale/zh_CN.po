@@ -1,0 +1,198 @@
+#
+msgid ""
+msgstr ""
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgctxt "field:product.cost.plan,operations:"
+msgid "Operation Lines"
+msgstr "工序明细"
+
+msgctxt "field:product.cost.plan,operations_cost:"
+msgid "Unit Operation Costs"
+msgstr "单位工序成本"
+
+msgctxt "field:product.cost.plan,production_quantity:"
+msgid "Production Quantity"
+msgstr "生产数量"
+
+msgctxt "field:product.cost.plan,route:"
+msgid "Route"
+msgstr "工艺路线"
+
+msgctxt "field:product.cost.plan.create_route.start,id:"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "field:product.cost.plan.create_route.start,name:"
+msgid "Name"
+msgstr "名称"
+
+msgctxt "field:product.cost.plan.operation_line,calculation:"
+msgid "Calculation"
+msgstr "计算"
+
+msgctxt "field:product.cost.plan.operation_line,create_date:"
+msgid "Create Date"
+msgstr "创建日期"
+
+msgctxt "field:product.cost.plan.operation_line,create_uid:"
+msgid "Create User"
+msgstr "创建用户"
+
+msgctxt "field:product.cost.plan.operation_line,id:"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "field:product.cost.plan.operation_line,name:"
+msgid "Name"
+msgstr "名称"
+
+msgctxt "field:product.cost.plan.operation_line,operation_type:"
+msgid "Operation Type"
+msgstr "交易类型"
+
+msgctxt "field:product.cost.plan.operation_line,plan:"
+msgid "Plan"
+msgstr "方案"
+
+msgctxt "field:product.cost.plan.operation_line,quantity:"
+msgid "Quantity"
+msgstr "数量"
+
+msgctxt "field:product.cost.plan.operation_line,quantity_uom:"
+msgid "Quantity UOM"
+msgstr "数量计量单位"
+
+msgctxt "field:product.cost.plan.operation_line,quantity_uom_digits:"
+msgid "Quantity UOM Digits"
+msgstr "数量计量单位小数位数"
+
+msgctxt "field:product.cost.plan.operation_line,rec_name:"
+msgid "Record Name"
+msgstr "记录名称"
+
+msgctxt "field:product.cost.plan.operation_line,sequence:"
+msgid "Sequence"
+msgstr "序列"
+
+msgctxt "field:product.cost.plan.operation_line,time:"
+msgid "Time"
+msgstr "时间"
+
+msgctxt "field:product.cost.plan.operation_line,time_uom:"
+msgid "Time UOM"
+msgstr "时间计量单位"
+
+msgctxt "field:product.cost.plan.operation_line,time_uom_digits:"
+msgid "Time UOM Digits"
+msgstr "时间单位小数位数"
+
+msgctxt "field:product.cost.plan.operation_line,total_cost:"
+msgid "Total Cost"
+msgstr "总成本"
+
+msgctxt "field:product.cost.plan.operation_line,unit_cost:"
+msgid "Unit Cost"
+msgstr "单位成本"
+
+msgctxt "field:product.cost.plan.operation_line,work_center_category:"
+msgid "Work Center Category"
+msgstr "工作中心类别"
+
+msgctxt "field:product.cost.plan.operation_line,write_date:"
+msgid "Write Date"
+msgstr "修改日期"
+
+msgctxt "field:product.cost.plan.operation_line,write_uid:"
+msgid "Write User"
+msgstr "修改用户"
+
+msgctxt "help:product.cost.plan.operation_line,calculation:"
+msgid ""
+"Use Standard to multiply the amount of time by the number of units produced."
+" Use Fixed to use the indicated time in the production without considering "
+"the quantities produced. The latter is useful for a setup or cleaning "
+"operation, for example."
+msgstr "选择“标准”可将时间乘以生产数量。选择“固定”则使用指定生产时间，不考虑生产数量。后者适用于准备或清洁等工序。"
+
+msgctxt "help:product.cost.plan.operation_line,quantity:"
+msgid "Quantity of the production product processed by the specified time."
+msgstr "在指定时间内处理的生产产品数量。"
+
+msgctxt "help:product.cost.plan.operation_line,total_cost:"
+msgid "The cost of this operation for total plan's quantity."
+msgstr "此工序在计划总数量下的成本。"
+
+msgctxt "help:product.cost.plan.operation_line,unit_cost:"
+msgid "The cost of this operation for each unit of plan's product."
+msgstr "每单位计划产品的此工序成本。"
+
+msgctxt "model:ir.action,name:act_product_cost_plan_operation_line"
+msgid "Product Cost Plan Operation"
+msgstr "产品成本计划工序"
+
+msgctxt "model:ir.action,name:wizard_create_route"
+msgid "Create Route"
+msgstr "创建工艺路线"
+
+#, python-format
+msgctxt "model:ir.message,text:product_already_has_route"
+msgid "Product \"%(product)s\" already has a route assigned."
+msgstr "产品“%(product)s”已分配工艺路线。"
+
+#, python-format
+msgctxt "model:ir.message,text:route_already_exists"
+msgid "A route already exists for cost plan \"%(cost_plan)s\"."
+msgstr "成本计划“%(cost_plan)s”已有工艺路线。"
+
+msgctxt "model:product.cost.plan.cost.type,name:operations"
+msgid "Operations"
+msgstr "交易"
+
+msgctxt "model:product.cost.plan.create_route.start,name:"
+msgid "Create Route Start"
+msgstr "创建工艺路线：开始"
+
+msgctxt "model:product.cost.plan.operation_line,name:"
+msgid "Product Cost Plan Operation Line"
+msgstr "产品成本计划工序明细"
+
+msgctxt "selection:product.cost.plan.operation_line,calculation:"
+msgid "Fixed"
+msgstr "固定的"
+
+msgctxt "selection:product.cost.plan.operation_line,calculation:"
+msgid "Standard"
+msgstr "标准"
+
+msgctxt "view:product.cost.plan.create_route.start:"
+msgid "Create Route"
+msgstr "创建工艺路线"
+
+msgctxt "view:product.cost.plan.operation_line:"
+msgid "Product Cost Plan BOM"
+msgstr "产品成本计划物料清单"
+
+msgctxt "view:product.cost.plan.operation_line:"
+msgid "Product Cost Plan Operation"
+msgstr "产品成本计划工序"
+
+msgctxt "view:product.cost.plan:"
+msgid "Operations"
+msgstr "交易"
+
+msgctxt "wizard_button:product.cost.plan.create_route,start,end:"
+msgid "Cancel"
+msgstr "取消"
+
+msgctxt "wizard_button:product.cost.plan.create_route,start,route:"
+msgid "Ok"
+msgstr "确定"
+
+msgctxt "model:product.cost.plan.operation_line,string:"
+msgid "Product Cost Plan Operation Line"
+msgstr "产品成本计划工序明细"
