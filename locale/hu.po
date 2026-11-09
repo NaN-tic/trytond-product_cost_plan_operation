@@ -1,0 +1,201 @@
+#
+msgid ""
+msgstr ""
+"Language: hu\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgctxt "field:product.cost.plan,operations:"
+msgid "Operation Lines"
+msgstr "Műveleti tételek"
+
+msgctxt "field:product.cost.plan,operations_cost:"
+msgid "Unit Operation Costs"
+msgstr "Egységnyi műveleti költségek"
+
+msgctxt "field:product.cost.plan,production_quantity:"
+msgid "Production Quantity"
+msgstr "Gyártási mennyiség"
+
+msgctxt "field:product.cost.plan,route:"
+msgid "Route"
+msgstr "Műveletterv"
+
+msgctxt "field:product.cost.plan.create_route.start,id:"
+msgid "ID"
+msgstr "Azonosító"
+
+msgctxt "field:product.cost.plan.create_route.start,name:"
+msgid "Name"
+msgstr "Név"
+
+msgctxt "field:product.cost.plan.operation_line,calculation:"
+msgid "Calculation"
+msgstr "Számítás"
+
+msgctxt "field:product.cost.plan.operation_line,create_date:"
+msgid "Create Date"
+msgstr "Létrehozás dátuma"
+
+msgctxt "field:product.cost.plan.operation_line,create_uid:"
+msgid "Create User"
+msgstr "Létrehozó felhasználó"
+
+msgctxt "field:product.cost.plan.operation_line,id:"
+msgid "ID"
+msgstr "Azonosító"
+
+msgctxt "field:product.cost.plan.operation_line,name:"
+msgid "Name"
+msgstr "Név"
+
+msgctxt "field:product.cost.plan.operation_line,operation_type:"
+msgid "Operation Type"
+msgstr "Ügylet típusa"
+
+msgctxt "field:product.cost.plan.operation_line,plan:"
+msgid "Plan"
+msgstr "Tervezés"
+
+msgctxt "field:product.cost.plan.operation_line,quantity:"
+msgid "Quantity"
+msgstr "Mennyiség"
+
+msgctxt "field:product.cost.plan.operation_line,quantity_uom:"
+msgid "Quantity UOM"
+msgstr "Mennyiség mértékegysége"
+
+msgctxt "field:product.cost.plan.operation_line,quantity_uom_digits:"
+msgid "Quantity UOM Digits"
+msgstr "Mennyiségi mértékegység tizedesjegyei"
+
+msgctxt "field:product.cost.plan.operation_line,rec_name:"
+msgid "Record Name"
+msgstr "Rekord neve"
+
+msgctxt "field:product.cost.plan.operation_line,sequence:"
+msgid "Sequence"
+msgstr "Sorszám"
+
+msgctxt "field:product.cost.plan.operation_line,time:"
+msgid "Time"
+msgstr "Időpont"
+
+msgctxt "field:product.cost.plan.operation_line,time_uom:"
+msgid "Time UOM"
+msgstr "Idő mértékegysége"
+
+msgctxt "field:product.cost.plan.operation_line,time_uom_digits:"
+msgid "Time UOM Digits"
+msgstr "Idő mértékegységének tizedesjegyei"
+
+msgctxt "field:product.cost.plan.operation_line,total_cost:"
+msgid "Total Cost"
+msgstr "Teljes költség"
+
+msgctxt "field:product.cost.plan.operation_line,unit_cost:"
+msgid "Unit Cost"
+msgstr "Egységköltség"
+
+msgctxt "field:product.cost.plan.operation_line,work_center_category:"
+msgid "Work Center Category"
+msgstr "Munkahelyközpont kategóriája"
+
+msgctxt "field:product.cost.plan.operation_line,write_date:"
+msgid "Write Date"
+msgstr "Módosítás dátuma"
+
+msgctxt "field:product.cost.plan.operation_line,write_uid:"
+msgid "Write User"
+msgstr "Módosító felhasználó"
+
+msgctxt "help:product.cost.plan.operation_line,calculation:"
+msgid ""
+"Use Standard to multiply the amount of time by the number of units produced."
+" Use Fixed to use the indicated time in the production without considering "
+"the quantities produced. The latter is useful for a setup or cleaning "
+"operation, for example."
+msgstr ""
+"A Normál beállítás az időt megszorozza a gyártott egységek számával. A "
+"Rögzített beállítás a megadott időt használja a gyártott mennyiségtől "
+"függetlenül. Ez például beállítási vagy tisztítási műveletnél hasznos."
+
+msgctxt "help:product.cost.plan.operation_line,quantity:"
+msgid "Quantity of the production product processed by the specified time."
+msgstr "A gyártott termékből a megadott idő alatt feldolgozott mennyiség."
+
+msgctxt "help:product.cost.plan.operation_line,total_cost:"
+msgid "The cost of this operation for total plan's quantity."
+msgstr "E művelet költsége a terv teljes mennyiségére."
+
+msgctxt "help:product.cost.plan.operation_line,unit_cost:"
+msgid "The cost of this operation for each unit of plan's product."
+msgstr "E művelet költsége a tervben szereplő termék egy egységére."
+
+msgctxt "model:ir.action,name:act_product_cost_plan_operation_line"
+msgid "Product Cost Plan Operation"
+msgstr "Termékköltség-terv művelete"
+
+msgctxt "model:ir.action,name:wizard_create_route"
+msgid "Create Route"
+msgstr "Műveletterv létrehozása"
+
+#, python-format
+msgctxt "model:ir.message,text:product_already_has_route"
+msgid "Product \"%(product)s\" already has a route assigned."
+msgstr "A(z) „%(product)s” termékhez már van műveletterv rendelve."
+
+#, python-format
+msgctxt "model:ir.message,text:route_already_exists"
+msgid "A route already exists for cost plan \"%(cost_plan)s\"."
+msgstr "A(z) „%(cost_plan)s” költségtervhez már létezik műveletterv."
+
+msgctxt "model:product.cost.plan.cost.type,name:operations"
+msgid "Operations"
+msgstr "Ügyletek"
+
+msgctxt "model:product.cost.plan.create_route.start,name:"
+msgid "Create Route Start"
+msgstr "Műveletterv létrehozása – Kezdés"
+
+msgctxt "model:product.cost.plan.operation_line,name:"
+msgid "Product Cost Plan Operation Line"
+msgstr "Termékköltség-terv műveleti tétele"
+
+msgctxt "selection:product.cost.plan.operation_line,calculation:"
+msgid "Fixed"
+msgstr "Fix"
+
+msgctxt "selection:product.cost.plan.operation_line,calculation:"
+msgid "Standard"
+msgstr "szabályos"
+
+msgctxt "view:product.cost.plan.create_route.start:"
+msgid "Create Route"
+msgstr "Műveletterv létrehozása"
+
+msgctxt "view:product.cost.plan.operation_line:"
+msgid "Product Cost Plan BOM"
+msgstr "Termékköltség-terv darabjegyzéke"
+
+msgctxt "view:product.cost.plan.operation_line:"
+msgid "Product Cost Plan Operation"
+msgstr "Termékköltség-terv művelete"
+
+msgctxt "view:product.cost.plan:"
+msgid "Operations"
+msgstr "Ügyletek"
+
+msgctxt "wizard_button:product.cost.plan.create_route,start,end:"
+msgid "Cancel"
+msgstr "Mégse"
+
+msgctxt "wizard_button:product.cost.plan.create_route,start,route:"
+msgid "Ok"
+msgstr "Rendben"
+
+msgctxt "model:product.cost.plan.operation_line,string:"
+msgid "Product Cost Plan Operation Line"
+msgstr "Termékköltség-terv műveleti tétele"
