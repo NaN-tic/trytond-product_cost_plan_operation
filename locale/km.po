@@ -1,0 +1,201 @@
+#
+msgid ""
+msgstr ""
+"Language: km\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgctxt "field:product.cost.plan,operations:"
+msgid "Operation Lines"
+msgstr "បន្ទាត់ប្រតិបត្តិការ"
+
+msgctxt "field:product.cost.plan,operations_cost:"
+msgid "Unit Operation Costs"
+msgstr "ថ្លៃដើមប្រតិបត្តិការក្នុងមួយឯកតា"
+
+msgctxt "field:product.cost.plan,production_quantity:"
+msgid "Production Quantity"
+msgstr "បរិមាណផលិត"
+
+msgctxt "field:product.cost.plan,route:"
+msgid "Route"
+msgstr "ផ្លូវ"
+
+msgctxt "field:product.cost.plan.create_route.start,id:"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "field:product.cost.plan.create_route.start,name:"
+msgid "Name"
+msgstr "ឈ្មោះ"
+
+msgctxt "field:product.cost.plan.operation_line,calculation:"
+msgid "Calculation"
+msgstr "ការគណនា"
+
+msgctxt "field:product.cost.plan.operation_line,create_date:"
+msgid "Create Date"
+msgstr "កាលបរិច្ឆេទបង្កើត"
+
+msgctxt "field:product.cost.plan.operation_line,create_uid:"
+msgid "Create User"
+msgstr "អ្នកបង្កើត"
+
+msgctxt "field:product.cost.plan.operation_line,id:"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "field:product.cost.plan.operation_line,name:"
+msgid "Name"
+msgstr "ឈ្មោះ"
+
+msgctxt "field:product.cost.plan.operation_line,operation_type:"
+msgid "Operation Type"
+msgstr "ប្រភេទប្រតិបត្តិការ"
+
+msgctxt "field:product.cost.plan.operation_line,plan:"
+msgid "Plan"
+msgstr "ផែនការ"
+
+msgctxt "field:product.cost.plan.operation_line,quantity:"
+msgid "Quantity"
+msgstr "បរិមាណ"
+
+msgctxt "field:product.cost.plan.operation_line,quantity_uom:"
+msgid "Quantity UOM"
+msgstr "ឯកតារង្វាស់បរិមាណ"
+
+msgctxt "field:product.cost.plan.operation_line,quantity_uom_digits:"
+msgid "Quantity UOM Digits"
+msgstr "ចំនួនខ្ទង់នៃឯកតារង្វាស់បរិមាណ"
+
+msgctxt "field:product.cost.plan.operation_line,rec_name:"
+msgid "Record Name"
+msgstr "ឈ្មោះកំណត់ត្រា"
+
+msgctxt "field:product.cost.plan.operation_line,sequence:"
+msgid "Sequence"
+msgstr "លំដាប់"
+
+msgctxt "field:product.cost.plan.operation_line,time:"
+msgid "Time"
+msgstr "ពេលវេលា"
+
+msgctxt "field:product.cost.plan.operation_line,time_uom:"
+msgid "Time UOM"
+msgstr "ឯកតារង្វាស់ពេលវេលា"
+
+msgctxt "field:product.cost.plan.operation_line,time_uom_digits:"
+msgid "Time UOM Digits"
+msgstr "ចំនួនខ្ទង់ទសភាគនៃឯកតាពេលវេលា"
+
+msgctxt "field:product.cost.plan.operation_line,total_cost:"
+msgid "Total Cost"
+msgstr "ថ្លៃដើមសរុប"
+
+msgctxt "field:product.cost.plan.operation_line,unit_cost:"
+msgid "Unit Cost"
+msgstr "ថ្លៃដើមក្នុងមួយឯកតា"
+
+msgctxt "field:product.cost.plan.operation_line,work_center_category:"
+msgid "Work Center Category"
+msgstr "ប្រភេទមជ្ឈមណ្ឌលការងារ"
+
+msgctxt "field:product.cost.plan.operation_line,write_date:"
+msgid "Write Date"
+msgstr "កាលបរិច្ឆេទកែប្រែ"
+
+msgctxt "field:product.cost.plan.operation_line,write_uid:"
+msgid "Write User"
+msgstr "អ្នកកែប្រែ"
+
+msgctxt "help:product.cost.plan.operation_line,calculation:"
+msgid ""
+"Use Standard to multiply the amount of time by the number of units produced. "
+"Use Fixed to use the indicated time in the production without considering the"
+" quantities produced. The latter is useful for a setup or cleaning operation,"
+" for example."
+msgstr ""
+"ប្រើ «ស្តង់ដារ» ដើម្បីគុណរយៈពេលនឹងចំនួនឯកតាដែលផលិត។ ប្រើ «ថេរ» "
+"ដើម្បីអនុវត្តរយៈពេលកំណត់ក្នុងផលិតកម្មដោយមិនគិតបរិមាណផលិត។ "
+"របៀបថេរមានប្រយោជន៍សម្រាប់ការរៀបចំ ឬការសម្អាត ជាឧទាហរណ៍។"
+
+msgctxt "help:product.cost.plan.operation_line,quantity:"
+msgid "Quantity of the production product processed by the specified time."
+msgstr "បរិមាណផលិតផលដែលបានដំណើរការក្នុងរយៈពេលផលិតកម្មដែលបានកំណត់។"
+
+msgctxt "help:product.cost.plan.operation_line,total_cost:"
+msgid "The cost of this operation for total plan's quantity."
+msgstr "ថ្លៃដើមនៃប្រតិបត្តិការនេះសម្រាប់បរិមាណសរុបក្នុងផែនការ។"
+
+msgctxt "help:product.cost.plan.operation_line,unit_cost:"
+msgid "The cost of this operation for each unit of plan's product."
+msgstr "ថ្លៃដើមនៃប្រតិបត្តិការនេះសម្រាប់ផលិតផលមួយឯកតាក្នុងផែនការ។"
+
+msgctxt "model:ir.action,name:act_product_cost_plan_operation_line"
+msgid "Product Cost Plan Operation"
+msgstr "ប្រតិបត្តិការក្នុងផែនការថ្លៃដើមផលិតផល"
+
+msgctxt "model:ir.action,name:wizard_create_route"
+msgid "Create Route"
+msgstr "បង្កើតផ្លូវផលិតកម្ម"
+
+#, python-format
+msgctxt "model:ir.message,text:product_already_has_route"
+msgid "Product \"%(product)s\" already has a route assigned."
+msgstr "ផលិតផល «%(product)s» មានផ្លូវផលិតកម្មរួចហើយ។"
+
+#, python-format
+msgctxt "model:ir.message,text:route_already_exists"
+msgid "A route already exists for cost plan \"%(cost_plan)s\"."
+msgstr "មានផ្លូវផលិតកម្មសម្រាប់ផែនការថ្លៃដើម «%(cost_plan)s» រួចហើយ។"
+
+msgctxt "model:product.cost.plan.cost.type,name:operations"
+msgid "Operations"
+msgstr "ប្រតិបត្តិការ"
+
+msgctxt "model:product.cost.plan.create_route.start,name:"
+msgid "Create Route Start"
+msgstr "ចាប់ផ្ដើមបង្កើតផ្លូវផលិតកម្ម"
+
+msgctxt "model:product.cost.plan.operation_line,name:"
+msgid "Product Cost Plan Operation Line"
+msgstr "បន្ទាត់ប្រតិបត្តិការក្នុងផែនការថ្លៃដើមផលិតផល"
+
+msgctxt "selection:product.cost.plan.operation_line,calculation:"
+msgid "Fixed"
+msgstr "ថេរ"
+
+msgctxt "selection:product.cost.plan.operation_line,calculation:"
+msgid "Standard"
+msgstr "ស្តង់ដារ"
+
+msgctxt "view:product.cost.plan.create_route.start:"
+msgid "Create Route"
+msgstr "បង្កើតផ្លូវផលិតកម្ម"
+
+msgctxt "view:product.cost.plan.operation_line:"
+msgid "Product Cost Plan BOM"
+msgstr "បញ្ជីសម្ភារៈ (BOM) នៃផែនការថ្លៃដើមផលិតផល"
+
+msgctxt "view:product.cost.plan.operation_line:"
+msgid "Product Cost Plan Operation"
+msgstr "ប្រតិបត្តិការក្នុងផែនការថ្លៃដើមផលិតផល"
+
+msgctxt "view:product.cost.plan:"
+msgid "Operations"
+msgstr "ប្រតិបត្តិការ"
+
+msgctxt "wizard_button:product.cost.plan.create_route,start,end:"
+msgid "Cancel"
+msgstr "បោះបង់"
+
+msgctxt "wizard_button:product.cost.plan.create_route,start,route:"
+msgid "Ok"
+msgstr "យល់ព្រម"
+
+msgctxt "model:product.cost.plan.operation_line,string:"
+msgid "Product Cost Plan Operation Line"
+msgstr "បន្ទាត់ប្រតិបត្តិការក្នុងផែនការថ្លៃដើមផលិតផល"
