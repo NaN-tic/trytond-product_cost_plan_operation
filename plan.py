@@ -6,13 +6,13 @@ import math
 from trytond.config import config
 from trytond.model import ModelSQL, ModelView, fields
 from trytond.pool import Pool, PoolMeta
-from trytond.pyson import Eval, Id
+from trytond.pyson import Eval, Id, If
 from trytond.transaction import Transaction
 from trytond.wizard import Wizard, StateView, StateAction, Button
 from trytond.exceptions import UserWarning, UserError
 from trytond.i18n import gettext
 
-__all__ = ['PlanOperationLine', 'Plan',
+__all__ = ['PlanOperationLine', 'RoutingStep', 'Plan',
     'CreateRouteStart', 'CreateRoute']
 
 
@@ -167,11 +167,80 @@ class PlanOperationLine(ModelSQL, ModelView):
         return total_cost.quantize(Decimal(str(10 ** -digits)))
 
 
+class RoutingStep(metaclass=PoolMeta):
+    __name__ = 'production.routing.step'
+
+    operation_type = fields.Many2One('production.operation.type',
+        'Operation Type')
+    work_center_category = fields.Many2One('production.work_center.category',
+        'Work Center Category')
+    calculation = fields.Selection([
+            ('standard', 'Standard'),
+            ('fixed', 'Fixed'),
+            ], 'Calculation',
+        help='Use Standard to multiply the amount of time by the number of '
+        'units produced. Use Fixed to use the indicated time in the '
+        'production without considering the quantities produced. The latter '
+        'is useful for a setup or cleaning operation, for example.')
+    time_uom = fields.Many2One('product.uom', 'Time UOM',
+        domain=[
+            ('category', '=', Id('product', 'uom_cat_time')),
+            ])
+    time_uom_digits = fields.Function(fields.Integer('Time UOM Digits'),
+        'on_change_with_time_uom_digits')
+    time = fields.Float('Time',
+        digits=(16, Eval('time_uom_digits', 2)))
+    quantity_uom = fields.Many2One('product.uom', 'Quantity UOM', domain=[],
+        states={
+            'invisible': Eval('calculation') != 'standard',
+            })
+    quantity_uom_digits = fields.Function(fields.Integer(
+            'Quantity UOM Digits'),
+        'on_change_with_quantity_uom_digits')
+    quantity = fields.Float('Quantity',
+        digits=(16, Eval('quantity_uom_digits', 2)),
+        states={
+            'invisible': Eval('calculation') != 'standard',
+            },
+        depends=['quantity_uom_digits', 'calculation'],
+        help='Quantity of the production product processed by the specified '
+        'time.')
+
+    @staticmethod
+    def default_calculation():
+        return 'standard'
+
+    @staticmethod
+    def default_time_uom():
+        pool = Pool()
+        ModelData = pool.get('ir.model.data')
+        return ModelData.get_id('product', 'uom_hour')
+
+    @fields.depends('work_center_category')
+    def on_change_with_time_uom(self):
+        if self.work_center_category:
+            return self.work_center_category.uom.id
+
+    @fields.depends('time_uom')
+    def on_change_with_time_uom_digits(self, name=None):
+        if self.time_uom:
+            return self.time_uom.digits
+        return 2
+
+    @fields.depends('quantity_uom')
+    def on_change_with_quantity_uom_digits(self, name=None):
+        if self.quantity_uom:
+            return self.quantity_uom.digits
+        return 2
+
+
 class Plan(metaclass=PoolMeta):
     __name__ = 'product.cost.plan'
 
-    route = fields.Many2One('production.route', 'Route', domain=[
-            ('uom', '=', Eval('uom'))
+    route = fields.Many2One('production.routing', 'Routing', domain=[
+            If(Eval('bom'),
+                ('boms', '=', Eval('bom', 0)),
+                ()),
             ])
     operations = fields.One2Many('product.cost.plan.operation_line', 'plan',
         'Operation Lines', context={
@@ -226,13 +295,19 @@ class Plan(metaclass=PoolMeta):
         for plan in plans:
             if not plan.route:
                 continue
-            for operation in plan.route.operations:
+            for step in plan.route.steps:
                 line = OperationLine()
-                for field in ('sequence', 'operation_type',
-                        'work_center_category', 'calculation',
-                        'time_uom', 'time',
-                        'quantity_uom', 'quantity_uom_digits', 'quantity'):
-                    setattr(line, field, getattr(operation, field))
+                line.sequence = step.sequence
+                line.operation_type = step.operation_type
+                line.work_center_category = step.work_center_category
+                line.calculation = (step.calculation
+                    or OperationLine.default_calculation())
+                line.time_uom = (step.time_uom
+                    or OperationLine.default_time_uom())
+                line.time = step.time or 0
+                line.quantity_uom = step.quantity_uom
+                line.quantity_uom_digits = step.quantity_uom_digits
+                line.quantity = step.quantity
                 line.plan = plan
                 to_create.append(line._save_values())
         if to_create:
@@ -240,8 +315,10 @@ class Plan(metaclass=PoolMeta):
 
     def create_route(self, name):
         pool = Pool()
-        Route = pool.get('production.route')
+        Route = pool.get('production.routing')
         ProductBOM = pool.get('product.product-production.bom')
+        RoutingOperation = pool.get('production.routing.operation')
+        RoutingStep = pool.get('production.routing.step')
         Warning = pool.get('res.user.warning')
         key = 'route_already_exists%s'%self.id
         if not self.product:
@@ -254,8 +331,10 @@ class Plan(metaclass=PoolMeta):
 
         route = Route()
         route.name = name
-        route.uom = self.uom
-        route.operations = self._get_route_operations()
+        if self.bom:
+            route.boms = [self.bom]
+        route.steps = self._get_route_steps(
+            RoutingOperation, RoutingStep)
         route.save()
         self.route = route
         self.save()
@@ -265,30 +344,43 @@ class Plan(metaclass=PoolMeta):
         else:
             product_bom = ProductBOM()
         product_bom.product = self.product
-        product_bom.route = route
+        product_bom.routing = route
         product_bom.save()
         return route
 
-    def _get_route_operations(self):
-        operations = []
+    def _get_route_steps(self, RoutingOperation, RoutingStep):
+        steps = []
         for line in self.operations:
-            operations.append(self._get_operation_line(line))
-        return operations
+            steps.append(self._get_route_step(
+                    line, RoutingOperation, RoutingStep))
+        return steps
 
-    def _get_operation_line(self, line):
-        'Returns the operation to create from a cost plan operation line'
-        Operation = Pool().get('production.route.operation')
-        operation = Operation()
-        operation.sequence = line.sequence
-        operation.operation_type = line.operation_type
-        operation.notes = line.name
-        operation.work_center_category = line.work_center_category
-        operation.time = line.time
-        operation.time_uom = line.time_uom
-        operation.calculation = line.calculation
-        operation.quantity = line.quantity
-        operation.quantity_uom = line.quantity_uom
-        return operation
+    def _get_route_step(self, line, RoutingOperation, RoutingStep):
+        'Returns the routing step to create from a cost plan operation line'
+        operation_name = None
+        if line.operation_type:
+            operation_name = line.operation_type.rec_name
+        if not operation_name:
+            operation_name = line.name or self.rec_name
+        operations = RoutingOperation.search([
+                ('name', '=', operation_name),
+                ], limit=1)
+        if operations:
+            operation, = operations
+        else:
+            operation = RoutingOperation(name=operation_name)
+            operation.save()
+        step = RoutingStep()
+        step.sequence = line.sequence
+        step.operation = operation
+        step.operation_type = line.operation_type
+        step.work_center_category = line.work_center_category
+        step.time = line.time
+        step.time_uom = line.time_uom
+        step.calculation = line.calculation
+        step.quantity = line.quantity
+        step.quantity_uom = line.quantity_uom
+        return step
 
     @classmethod
     def copy(cls, plans, default=None):
@@ -326,7 +418,7 @@ class CreateRoute(Wizard):
             Button('Cancel', 'end', 'tryton-cancel'),
             Button('Ok', 'route', 'tryton-ok', True),
             ])
-    route = StateAction('production_route.act_production_route')
+    route = StateAction('production_routing.act_routing_list')
 
     def default_start(self, fields):
         CostPlan = Pool().get('product.cost.plan')

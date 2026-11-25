@@ -7,6 +7,7 @@ from . import plan
 def register():
     Pool.register(
         plan.PlanOperationLine,
+        plan.RoutingStep,
         plan.Plan,
         plan.CreateRouteStart,
         module='product_cost_plan_operation', type_='model')
